@@ -6,8 +6,15 @@ import { StyleSheet, Text, View } from "react-native";
 export default function App() {
   const [loading, setLoading] = useState(true);
 
+  const preload = async () => {
+    const images = [
+      require('./assets/')
+    ]
+  }
+
   if (loading) {
-    return <AppLoading />;
+    // @ts-ignore
+    return <AppLoading onError={console.warn} onFinish={()=>setLoading(false)}/>;
   }
 
   return (
