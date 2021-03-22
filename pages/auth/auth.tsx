@@ -1,6 +1,12 @@
 import { StackNavigationProp, StackScreenProps } from "@react-navigation/stack";
-import React from "react";
-import { Text, View } from "react-native";
+import React, { useRef } from "react";
+import {
+  KeyboardAvoidingView,
+  Platform,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import { LoggedOutStackParamList } from "../../routers/stacks";
 import styled from "styled-components/native";
 import { AuthLayout } from "../../components/AuthLayout";
@@ -13,22 +19,37 @@ const Input = styled.TextInput`
   background-color: ${(props) => props.theme.background.secondary};
   color: ${(props) => props.theme.color.primary};
   padding: 10px 8px;
-  &::placeholder {
-    color: ${(props) => props.theme.color.secondary};
-  }
+
   width: 100%;
 
   margin-bottom: 10px;
 `;
 
 export const AuthPage: React.FC<AuthPageProp> = ({ navigation, route }) => {
+  const fuckRef = useRef<TextInput>(null);
+  const onNext = () => {
+    console.log(fuckRef.current?.refs);
+  };
   return (
     <AuthLayout>
-      <Input placeholder="What the fuck" />
-      <Input placeholder="What the fuck" />
-      <Input placeholder="What the fuck" />
-      <Input placeholder="What the fuck" />
-      <ButtonInactivable disabled={false} onPress={() => {}} text="TeXT" />
+      <KeyboardAvoidingView
+        behavior="position"
+        keyboardVerticalOffset={Platform.OS === "ios" ? 20 : 50}
+        style={{ width: "100%" }}
+      >
+        <Input
+          ref={fuckRef}
+          caretHidden
+          placeholder="What the fuck"
+          returnKeyType="next"
+          keyboardType="email-address"
+          onSubmitEditing={onNext}
+        />
+        <Input placeholder="What the fuck" />
+        <Input placeholder="What the fuck" />
+        <Input placeholder="What the fuck" />
+        <ButtonInactivable disabled={false} onPress={() => {}} text="TeXT" />
+      </KeyboardAvoidingView>
     </AuthLayout>
   );
 };

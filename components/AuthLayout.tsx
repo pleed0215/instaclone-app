@@ -1,6 +1,10 @@
 import React from "react";
 import { View } from "react-native";
 import { useColorScheme } from "react-native-appearance";
+import {
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+} from "react-native-gesture-handler";
 import styled from "styled-components/native";
 
 const Container = styled.View`
