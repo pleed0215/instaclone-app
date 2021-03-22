@@ -41,3 +41,9 @@
   - Stack + Typescript setting 참고할 링크
 
     https://reactnavigation.org/docs/typescript/
+
+3. react-native-appearance
+
+expo install react-native-appearance
+
+https://docs.expo.io/versions/latest/sdk/appearance/

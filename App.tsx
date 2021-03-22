@@ -4,17 +4,21 @@ import * as Font from "expo-font";
 import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, useColorScheme, View } from "react-native";
 import { LoggedOutNavigation } from "./routers/logged.out";
 import { NavigationContainer } from "@react-navigation/native";
+import styled, { ThemeProvider } from "styled-components/native";
+import { AppearanceProvider } from "react-native-appearance";
+import { darkTheme, lightTheme } from "./theme/theme";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
+  const mode = useColorScheme();
 
   const preload = async () => {
     const images = [
-      require("./assets/instalogo.png"),
-      require("./assets/instalogo_dark.png"),
+      require("./assets/insta.png"),
+      require("./assets/insta_dark.png"),
     ];
 
     const fontsToLoad = [Ionicons.font];
@@ -37,9 +41,13 @@ export default function App() {
   }
 
   return (
-    <NavigationContainer>
-      <LoggedOutNavigation />
-    </NavigationContainer>
+    <AppearanceProvider>
+      <ThemeProvider theme={mode === "light" ? lightTheme : darkTheme}>
+        <NavigationContainer>
+          <LoggedOutNavigation />
+        </NavigationContainer>
+      </ThemeProvider>
+    </AppearanceProvider>
   );
 }
 

@@ -9,11 +9,12 @@ export const LoggedOutNavigation = () => {
     <LoggedOutStack.Navigator
       headerMode="screen"
       screenOptions={{ headerBackTitleVisible: false }}
+      initialRouteName="Welcome"
     >
       <LoggedOutStack.Screen
         name="Welcome"
         component={WelcomePage}
-        options={{ headerTitleStyle: { fontSize: 30 } }}
+        options={{ headerShown: false }}
       />
       <LoggedOutStack.Screen name="Auth" component={AuthPage} />
     </LoggedOutStack.Navigator>
