@@ -1,10 +1,6 @@
 import React from "react";
-import { View } from "react-native";
+import { Keyboard, TouchableWithoutFeedback, View } from "react-native";
 import { useColorScheme } from "react-native-appearance";
-import {
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-} from "react-native-gesture-handler";
 import styled from "styled-components/native";
 
 const Container = styled.View`
@@ -25,19 +21,24 @@ const Logo = styled.Image`
 
 export const AuthLayout: React.FC = ({ children }) => {
   const mode = useColorScheme();
+  const onPress = () => {
+    Keyboard.dismiss();
+  };
 
   return (
-    <Container>
-      <Logo
-        resizeMode="contain"
-        source={
-          mode === "light"
-            ? require("../assets/insta.png")
-            : require("../assets/insta_dark.png")
-        }
-      />
+    <TouchableWithoutFeedback onPress={onPress}>
+      <Container>
+        <Logo
+          resizeMode="contain"
+          source={
+            mode === "light"
+              ? require("../assets/insta.png")
+              : require("../assets/insta_dark.png")
+          }
+        />
 
-      {children}
-    </Container>
+        {children}
+      </Container>
+    </TouchableWithoutFeedback>
   );
 };

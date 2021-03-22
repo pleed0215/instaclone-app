@@ -27,16 +27,10 @@ const Input = styled.TextInput`
 
 export const AuthPage: React.FC<AuthPageProp> = ({ navigation, route }) => {
   const fuckRef = useRef<TextInput>(null);
-  const onNext = () => {
-    console.log(fuckRef.current?.refs);
-  };
+  const onNext = () => {};
   return (
     <AuthLayout>
-      <KeyboardAvoidingView
-        behavior="position"
-        keyboardVerticalOffset={Platform.OS === "ios" ? 20 : 50}
-        style={{ width: "100%" }}
-      >
+      <KeyboardAvoidingView behavior="padding" style={{ width: "100%" }}>
         <Input
           ref={fuckRef}
           caretHidden
@@ -48,8 +42,8 @@ export const AuthPage: React.FC<AuthPageProp> = ({ navigation, route }) => {
         <Input placeholder="What the fuck" />
         <Input placeholder="What the fuck" />
         <Input placeholder="What the fuck" />
-        <ButtonInactivable disabled={false} onPress={() => {}} text="TeXT" />
       </KeyboardAvoidingView>
+      <ButtonInactivable disabled={false} onPress={() => {}} text="TeXT" />
     </AuthLayout>
   );
 };
