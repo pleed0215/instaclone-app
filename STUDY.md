@@ -17,3 +17,27 @@
 2. React navigation
 
 - [문서링크](https://reactnavigation.org/docs/getting-started)
+- Stack navigiation 사용하려면 따로 인스톨 해줘야 함.
+
+  https://reactnavigation.org/docs/stack-navigator/
+
+  ```tsx
+    const Stack = createStackNavigation();
+
+    ...
+
+    <NavigationContainer>
+      <Stack.Navigation>
+        <Stack.Screen name="blahblah" component={WelcomePage} />
+          ...
+  ```
+
+  이런식으로 사용하는 구조임.
+
+  - Screen에서 사용하는 component에는 navigation과 route라는 props가 자동으로 들어간다.
+
+    <code>console.log(props)</code> 해보면 알 수 있음.
+
+  - Stack + Typescript setting 참고할 링크
+
+    https://reactnavigation.org/docs/typescript/

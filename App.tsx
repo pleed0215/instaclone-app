@@ -5,6 +5,8 @@ import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { LoggedOutNavigation } from "./routers/logged.out";
+import { NavigationContainer } from "@react-navigation/native";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -35,10 +37,9 @@ export default function App() {
   }
 
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <LoggedOutNavigation />
+    </NavigationContainer>
   );
 }
 
