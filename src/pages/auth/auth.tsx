@@ -90,10 +90,10 @@ export const AuthPage: React.FC<AuthPageProp> = ({ navigation, route }) => {
   const [login] = useMutation<MutationLogin, MutationLoginVariables>(
     GQL_LOGIN,
     {
-      onCompleted: (data: MutationLogin) => {
+      onCompleted: async (data: MutationLogin) => {
         setLoading(false);
         if (data.login.ok && data.login.token) {
-          makeLogin(data.login.token);
+          await makeLogin(data.login.token);
         } else {
           setError(`로그인 실패: ${data.login.error}`);
         }

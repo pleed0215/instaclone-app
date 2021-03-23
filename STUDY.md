@@ -57,3 +57,12 @@ https://stackoverflow.com/questions/59038086/react-native-securetextentry-disabl
 ngrok 개굿.. 진작 알았으면.. ㅠㅠ
 
 로컬에서 할 거면 localtunnel을 이용해도 괜찮을 것같다. 근데 나는 싫엉.. local에서 하기 싫엉.
+
+5. react native directory
+   react native 관련 패키지들을 다운 받을 수 있는 허브.
+   react native에서 지원하는 기본 async storage가 폐기 되었으므로,, 다른 대안을 찾아야 한다면서 들어온 곳..
+   expo에서도 검색할 수 있다.
+   expo에서 async storage를 검색하면 나온다.
+
+web에서 했던 방식대로 storage를 조작하기 어려우므로..(storag가 async라 makeVar에 기본값을 할당하기 어렵네..)
+asset을 load하는 곳에서 token도 읽어오도록 하자.
