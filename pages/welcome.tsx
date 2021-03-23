@@ -28,7 +28,6 @@ export const WelcomePage: React.FC<
   return (
     <AuthLayout>
       <ButtonInactivable onPress={() => goToAuth(true)} text="계정 만들기" />
-
       <TouchableOpacity onPress={() => goToAuth(false)}>
         <LoginText>로그인</LoginText>
       </TouchableOpacity>

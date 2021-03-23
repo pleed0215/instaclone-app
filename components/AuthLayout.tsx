@@ -1,5 +1,11 @@
 import React from "react";
-import { Keyboard, TouchableWithoutFeedback, View } from "react-native";
+import {
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
 import { useColorScheme } from "react-native-appearance";
 import styled from "styled-components/native";
 
@@ -22,22 +28,35 @@ const Logo = styled.Image`
 export const AuthLayout: React.FC = ({ children }) => {
   const mode = useColorScheme();
   const onPress = () => {
-    Keyboard.dismiss();
+    if (Platform.OS !== "web") {
+      Keyboard.dismiss();
+    }
   };
 
   return (
-    <TouchableWithoutFeedback onPress={onPress}>
+    <TouchableWithoutFeedback onPress={onPress} style={{ flex: 1 }}>
       <Container>
-        <Logo
-          resizeMode="contain"
-          source={
-            mode === "light"
-              ? require("../assets/insta.png")
-              : require("../assets/insta_dark.png")
-          }
-        />
+        <KeyboardAvoidingView
+          behavior="padding"
+          style={{
+            width: "100%",
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+          keyboardVerticalOffset={40}
+        >
+          <Logo
+            resizeMode="contain"
+            source={
+              mode === "light"
+                ? require("../assets/insta.png")
+                : require("../assets/insta_dark.png")
+            }
+          />
 
-        {children}
+          {children}
+        </KeyboardAvoidingView>
       </Container>
     </TouchableWithoutFeedback>
   );
