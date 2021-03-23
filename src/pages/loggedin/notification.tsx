@@ -13,10 +13,10 @@ const SText = styled.Text`
   color: ${(props) => props.theme.color.primary};
 `;
 
-export const FeedPage = () => {
+export const NotificationPage = () => {
   return (
     <SView>
-      <SText>Feed</SText>
+      <SText>Notification</SText>
     </SView>
   );
 };

@@ -1,5 +1,7 @@
 # Instaclone app
 
+home,search, photo, like/heart, profile
+
 ## 1. AppLoading
 
 ### issue

@@ -8,7 +8,9 @@ export type LoggedOutStackParamList = {
 
 export type LoggedInStackParamList = {
   Feed: {};
-  Welcome: {};
+  Search: {};
+  Profile: {};
+  Notification: {};
 };
 export const LoggedOutNav = createStackNavigator<LoggedOutStackParamList>();
 export const LoggedInNav = createBottomTabNavigator<LoggedInStackParamList>();

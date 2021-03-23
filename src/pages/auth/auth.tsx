@@ -1,5 +1,5 @@
 import { StackScreenProps } from "@react-navigation/stack";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Text, TextInput } from "react-native";
 import { LoggedOutStackParamList } from "../../routers/navs";
 import styled from "styled-components/native";
@@ -75,6 +75,7 @@ export const AuthPage: React.FC<AuthPageProp> = ({ navigation, route }) => {
     formState,
     errors,
     handleSubmit,
+    reset,
   } = useForm<FormProp>({
     mode: "onChange",
     defaultValues: {
