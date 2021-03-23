@@ -1,25 +1,24 @@
 import React from "react";
-import { createStackNavigator } from "@react-navigation/stack";
 import { WelcomePage } from "../pages/welcome";
 import { AuthPage } from "../pages/auth/auth";
-import { LoggedOutStack } from "./stacks";
+import { LoggedOutNav } from "./navs";
 import { useColorScheme } from "react-native-appearance";
 import { darkTheme, lightTheme } from "../theme/theme";
 
 export const LoggedOutNavigation = () => {
   const isDark = useColorScheme() === "dark";
   return (
-    <LoggedOutStack.Navigator
+    <LoggedOutNav.Navigator
       headerMode="screen"
       screenOptions={{ headerBackTitleVisible: false }}
       initialRouteName="Welcome"
     >
-      <LoggedOutStack.Screen
+      <LoggedOutNav.Screen
         name="Welcome"
         component={WelcomePage}
         options={{ headerShown: false }}
       />
-      <LoggedOutStack.Screen
+      <LoggedOutNav.Screen
         name="Auth"
         component={AuthPage}
         options={{
@@ -30,6 +29,6 @@ export const LoggedOutNavigation = () => {
             : lightTheme.color.primary,
         }}
       />
-    </LoggedOutStack.Navigator>
+    </LoggedOutNav.Navigator>
   );
 };

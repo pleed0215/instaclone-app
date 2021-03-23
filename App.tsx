@@ -5,11 +5,15 @@ import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import { StyleSheet, Text, useColorScheme, View } from "react-native";
-import { LoggedOutNavigation } from "./routers/logged.out";
+import { LoggedOutNavigation } from "./src/routers/logged.out";
 import { NavigationContainer } from "@react-navigation/native";
 import styled, { ThemeProvider } from "styled-components/native";
 import { AppearanceProvider } from "react-native-appearance";
-import { darkTheme, lightTheme } from "./theme/theme";
+import { darkTheme, lightTheme } from "./src/theme/theme";
+import { ApolloProvider, useReactiveVar } from "@apollo/client";
+import { apolloClient } from "./src/apollo/client";
+import { isLoggedInVar } from "./src/apollo/vars";
+import { LoggedInNavigation } from "./src/routers/logged.in";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -29,6 +33,7 @@ export default function App() {
     const cacheFonts = fontsToLoad.map((font) => Font.loadAsync(font));
     await Promise.all<any>([...cacheImages, ...cacheFonts]);
   };
+  const isLoggedIn = useReactiveVar(isLoggedInVar);
 
   if (loading) {
     return (
@@ -41,13 +46,15 @@ export default function App() {
   }
 
   return (
-    <AppearanceProvider>
-      <ThemeProvider theme={mode === "light" ? lightTheme : darkTheme}>
-        <NavigationContainer>
-          <LoggedOutNavigation />
-        </NavigationContainer>
-      </ThemeProvider>
-    </AppearanceProvider>
+    <ApolloProvider client={apolloClient}>
+      <AppearanceProvider>
+        <ThemeProvider theme={mode === "light" ? lightTheme : darkTheme}>
+          <NavigationContainer>
+            {isLoggedIn ? <LoggedInNavigation /> : <LoggedOutNavigation />}
+          </NavigationContainer>
+        </ThemeProvider>
+      </AppearanceProvider>
+    </ApolloProvider>
   );
 }
 

@@ -1,11 +1,12 @@
 import React from "react";
-import { GestureResponderEvent } from "react-native";
+import { ActivityIndicator, GestureResponderEvent } from "react-native";
 import styled from "styled-components/native";
 
 type ButtonInactivableProp = {
   onPress: (event: GestureResponderEvent) => void;
   disabled?: boolean;
   text: string;
+  loading?: boolean;
 };
 
 type ButtonProp = {
@@ -14,7 +15,7 @@ type ButtonProp = {
 
 const Button = styled.TouchableOpacity<ButtonProp>`
   background-color: ${(props) => props.theme.background.button};
-  padding: 10px 5px;
+  padding: 15px 5px;
   border-radius: 5px;
   margin-bottom: 30px;
   width: 100%;
@@ -31,11 +32,12 @@ const Text = styled.Text`
 export const ButtonInactivable: React.FC<ButtonInactivableProp> = ({
   onPress,
   disabled,
+  loading,
   text,
 }) => {
   return (
     <Button disabled={disabled} onPress={onPress}>
-      <Text>{text}</Text>
+      {loading ? <ActivityIndicator color="white" /> : <Text>{text}</Text>}
     </Button>
   );
 };

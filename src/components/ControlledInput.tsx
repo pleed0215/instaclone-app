@@ -12,9 +12,11 @@ interface ControlledInputProp extends TextInputProps {
     "valueAsNumber" | "valueAsDate" | "setValueAs"
   >;
   inputRef?: React.Ref<TextInput>;
+  isError?: boolean;
 }
-const Input = styled.TextInput`
-  border: 1px solid ${(props) => props.theme.color.border};
+const Input = styled.TextInput<{ isError?: boolean }>`
+  border: 1px solid
+    ${(props) => (props.isError === true ? "red" : props.theme.color.border)};
   background-color: ${(props) => props.theme.background.secondary};
   color: ${(props) => props.theme.color.primary};
   padding: 15px 8px;

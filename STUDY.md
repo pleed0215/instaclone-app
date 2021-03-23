@@ -47,3 +47,13 @@
 expo install react-native-appearance
 
 https://docs.expo.io/versions/latest/sdk/appearance/
+
+4. react hook form
+
+text input에서 strong password behavior 나오는 것 없애는 방법
+
+https://stackoverflow.com/questions/59038086/react-native-securetextentry-disable-ios-13-strong-password-behavior
+
+ngrok 개굿.. 진작 알았으면.. ㅠㅠ
+
+로컬에서 할 거면 localtunnel을 이용해도 괜찮을 것같다. 근데 나는 싫엉.. local에서 하기 싫엉.

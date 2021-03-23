@@ -7,6 +7,7 @@ export const lightTheme: DefaultTheme = {
     border: "rgb(219,219,219)",
     link: "#0095f6",
     button: "white",
+    error: "red",
   },
   background: {
     primary: "#fafafa",
@@ -22,6 +23,7 @@ export const darkTheme: DefaultTheme = {
     border: "rgb(219,219,219)",
     link: "#0095f6",
     button: "white",
+    error: "red",
   },
   background: {
     primary: "#111",

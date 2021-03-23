@@ -2,7 +2,7 @@ import { StackScreenProps } from "@react-navigation/stack";
 import React from "react";
 
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { LoggedOutStackParamList } from "../routers/stacks";
+import { LoggedOutStackParamList } from "../routers/navs";
 import styled from "styled-components/native";
 
 import { ButtonInactivable } from "../components/ButtonInactivable";

@@ -50,8 +50,8 @@ export const AuthLayout: React.FC = ({ children }) => {
             resizeMode="contain"
             source={
               mode === "light"
-                ? require("../assets/insta.png")
-                : require("../assets/insta_dark.png")
+                ? require("../../assets/insta.png")
+                : require("../../assets/insta_dark.png")
             }
           />
 
