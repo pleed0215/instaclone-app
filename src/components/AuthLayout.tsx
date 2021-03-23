@@ -36,25 +36,23 @@ export const AuthLayout: React.FC = ({ children }) => {
   return (
     <TouchableWithoutFeedback onPress={onPress} style={{ flex: 1 }}>
       <Container>
+        <Logo
+          resizeMode="contain"
+          source={
+            mode === "light"
+              ? require("../../assets/insta.png")
+              : require("../../assets/insta_dark.png")
+          }
+        />
         <KeyboardAvoidingView
-          behavior="padding"
+          behavior={Platform.OS === "android" ? "height" : "padding"}
           style={{
             width: "100%",
-            flex: 1,
+
             justifyContent: "center",
             alignItems: "center",
           }}
-          keyboardVerticalOffset={40}
         >
-          <Logo
-            resizeMode="contain"
-            source={
-              mode === "light"
-                ? require("../../assets/insta.png")
-                : require("../../assets/insta_dark.png")
-            }
-          />
-
           {children}
         </KeyboardAvoidingView>
       </Container>
