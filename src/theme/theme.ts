@@ -1,3 +1,4 @@
+import { useColorScheme } from "react-native-appearance";
 import { DefaultTheme } from "styled-components";
 
 export const lightTheme: DefaultTheme = {
@@ -31,4 +32,9 @@ export const darkTheme: DefaultTheme = {
     button: "#4795f6",
     avatar: "#dbdbdb",
   },
+};
+
+export const useCustomTheme = () => {
+  const isDark = useColorScheme() === "dark";
+  return isDark ? darkTheme : lightTheme;
 };

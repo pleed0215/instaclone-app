@@ -1,6 +1,6 @@
 import { StackScreenProps } from "@react-navigation/stack";
 import React from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { TouchableOpacity, Text, View } from "react-native";
 import styled from "styled-components/native";
 import { LoggedInNavParamList } from "../../routers/navs";
 
@@ -14,14 +14,13 @@ const SView = styled.View`
 const SText = styled.Text`
   color: ${(props) => props.theme.color.primary};
 `;
+type PhotoPageProp = StackScreenProps<LoggedInNavParamList, "Photo">;
 
-type SearchPageProp = StackScreenProps<LoggedInNavParamList, "Search">;
-
-export const SearchPage: React.FC<SearchPageProp> = ({ navigation, route }) => {
+export const PhotoPage: React.FC<PhotoPageProp> = ({ navigation, route }) => {
   return (
     <SView>
-      <TouchableOpacity onPress={() => navigation.navigate("Photo", {})}>
-        <SText>Photo</SText>
+      <TouchableOpacity onPress={() => navigation.navigate("Profile", {})}>
+        <SText>Profile</SText>
       </TouchableOpacity>
     </SView>
   );

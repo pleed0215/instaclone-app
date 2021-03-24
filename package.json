@@ -33,7 +33,8 @@
     "react-native-screens": "~2.15.2",
     "react-native-web": "~0.13.12",
     "rimraf": "^3.0.2",
-    "styled-components": "^5.2.1"
+    "styled-components": "^5.2.1",
+    "@expo/vector-icons": "^12.0.0"
   },
   "devDependencies": {
     "@babel/core": "~7.9.0",

@@ -68,3 +68,30 @@ ngrok 개굿.. 진작 알았으면.. ㅠㅠ
 
 web에서 했던 방식대로 storage를 조작하기 어려우므로..(storag가 async라 makeVar에 기본값을 할당하기 어렵네..)
 asset을 load하는 곳에서 token도 읽어오도록 하자.
+
+6. StackNavFactory
+
+- 인스타그램 스크린들을 분석하면서..
+- 봐라.. 탭 네비게이션이 밑에 있지만, 요기 사진을 누르면 스택 네비게이션으로 작동하지 하믄서.. 보여준..
+- 탭 네비게이션 안에 스택 네비게이션을 넣어야 되는데, 자꾸 만들기 힘드니까 StackNavigationFactory를 만들자라는 취지.
+- 내용 자체는 어렵지 않은데, typescript 적용을 해야해서..몇가지 고민이 좀 들긴했음.
+
+```tsx
+<LoggedInNav.Screen
+  name="Me"
+  options={{
+    tabBarIcon: ({ focused, color, size }) => (
+      <Ionicons
+        name={focused ? "person" : "person-outline"}
+        color={color}
+        size={focused ? size + 4 : size}
+      />
+    ),
+  }}
+>
+  {/* 이 부분이 적응이 잘 안됨 */}
+  {() => <StackNavFactory screenName="Me" />}
+</LoggedInNav.Screen>
+```
+
+이런 형태의 코드는 좀.. 잘 적응되지 않는다..
