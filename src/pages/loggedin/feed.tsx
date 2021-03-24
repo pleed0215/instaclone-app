@@ -1,11 +1,13 @@
 import { useQuery } from "@apollo/client";
 import React, { useState } from "react";
-import { Text, View } from "react-native";
+import { FlatList, Text, View, ListRenderItem } from "react-native";
 import styled from "styled-components/native";
 import { GQL_SEE_FEEDS } from "../../apollo/gqls";
 import {
   QuerySeeFeeds,
   QuerySeeFeedsVariables,
+  QuerySeeFeeds_seeFeeds,
+  QuerySeeFeeds_seeFeeds_feeds,
 } from "../../codegen/QuerySeeFeeds";
 import { ScreenLayout } from "../../components/ScreenLayout";
 
@@ -28,13 +30,26 @@ export const FeedPage = () => {
       variables: {
         input: {
           page,
+          pageSize: 10,
         },
       },
     }
   );
+  const renderPhoto: ListRenderItem<QuerySeeFeeds_seeFeeds_feeds> = ({
+    item,
+  }) => (
+    <View>
+      <SText>{item.file}</SText>
+    </View>
+  );
+
   return (
     <ScreenLayout loading={loading}>
-      <Text>hello</Text>
+      <FlatList
+        data={data?.seeFeeds.feeds}
+        keyExtractor={(item: QuerySeeFeeds_seeFeeds_feeds) => `${item.id}`}
+        renderItem={renderPhoto}
+      ></FlatList>
     </ScreenLayout>
   );
 };
