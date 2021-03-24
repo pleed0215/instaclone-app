@@ -38,3 +38,10 @@ export const useCustomTheme = () => {
   const isDark = useColorScheme() === "dark";
   return isDark ? darkTheme : lightTheme;
 };
+
+export const useLogo = () => {
+  const isDark = useColorScheme() === "dark";
+  return isDark
+    ? require("../../assets/insta_dark.png")
+    : require("../../assets/insta.png");
+};

@@ -20,6 +20,11 @@ export interface LoginInput {
   password: string;
 }
 
+export interface SeeFeedsInput {
+  page?: number | null;
+  pageSize?: number | null;
+}
+
 //==============================================================
 // END Enums and Input Objects
 //==============================================================
