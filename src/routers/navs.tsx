@@ -11,6 +11,7 @@ import { ProfilePage } from "../pages/loggedin/profile";
 import { PhotoPage } from "../pages/loggedin/photo";
 import { SearchPage } from "../pages/loggedin/search";
 import { NotificationPage } from "../pages/loggedin/notification";
+import { useCustomTheme } from "../theme/theme";
 
 export type LoggedOutStackParamList = {
   Auth: { isCreating: boolean };
@@ -36,8 +37,16 @@ interface StackNavFactoryProp {
 export const StackNavFactory: React.FC<StackNavFactoryProp> = ({
   screenName,
 }) => {
+  const theme = useCustomTheme();
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        headerTintColor: theme.color.primary,
+        headerStyle: {
+          backgroundColor: theme.background.primary,
+        },
+      }}
+    >
       {screenName === "Feed" && (
         <Stack.Screen name={screenName} component={FeedPage} />
       )}
