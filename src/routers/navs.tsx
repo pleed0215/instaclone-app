@@ -13,9 +13,8 @@ import { SearchPage } from "../pages/loggedin/search";
 import { NotificationPage } from "../pages/loggedin/notification";
 import { useCustomTheme, useLogo } from "../theme/theme";
 import { Image } from "react-native";
-import { isRequiredArgument } from "graphql";
 import { LikesPage } from "../pages/loggedin/likes";
-import { CommentsPage } from "../pages/loggedin/Comments";
+import { CommentsPage } from "../pages/loggedin/comments";
 
 export type LoggedOutStackParamList = {
   Auth: { isCreating: boolean };
