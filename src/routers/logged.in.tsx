@@ -1,12 +1,7 @@
 import React from "react";
-import { FeedPage } from "../pages/loggedin/feed";
-import { NotificationPage } from "../pages/loggedin/notification";
-import { ProfilePage } from "../pages/loggedin/profile";
-import { SearchPage } from "../pages/loggedin/search";
 import { useCustomTheme } from "../theme/theme";
 import { LoggedInNav, StackNavFactory } from "./navs";
 import { Ionicons } from "@expo/vector-icons";
-import { View } from "react-native";
 import { PhotoPage } from "../pages/loggedin/photo";
 
 export const LoggedInNavigation = () => {

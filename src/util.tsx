@@ -55,3 +55,9 @@ export const secondsToTime = (seconds: number) => {
   }
   return Math.floor(seconds) + " seconds";
 };
+
+export const getPluralText = (
+  num: number,
+  name: string,
+  plural: string = "s"
+) => (num > 1 ? `${num} ${name}${plural}` : `${num} ${name}`);

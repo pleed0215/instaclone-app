@@ -9,6 +9,7 @@ import {
   QuerySeeFeeds_seeFeeds,
   QuerySeeFeeds_seeFeeds_feeds,
 } from "../../codegen/QuerySeeFeeds";
+import { FeedPhoto } from "../../components/FeedPhoto";
 import { ScreenLayout } from "../../components/ScreenLayout";
 
 const SView = styled.View`
@@ -37,19 +38,16 @@ export const FeedPage = () => {
   );
   const renderPhoto: ListRenderItem<QuerySeeFeeds_seeFeeds_feeds> = ({
     item,
-  }) => (
-    <View>
-      <SText>{item.file}</SText>
-    </View>
-  );
+  }) => <FeedPhoto photo={item} />;
 
   return (
     <ScreenLayout loading={loading}>
       <FlatList
         data={data?.seeFeeds.feeds}
         keyExtractor={(item: QuerySeeFeeds_seeFeeds_feeds) => `${item.id}`}
+        showsVerticalScrollIndicator={false}
         renderItem={renderPhoto}
-      ></FlatList>
+      />
     </ScreenLayout>
   );
 };

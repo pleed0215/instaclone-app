@@ -14,6 +14,8 @@ import { NotificationPage } from "../pages/loggedin/notification";
 import { useCustomTheme, useLogo } from "../theme/theme";
 import { Image } from "react-native";
 import { isRequiredArgument } from "graphql";
+import { LikesPage } from "../pages/loggedin/likes";
+import { CommentsPage } from "../pages/loggedin/Comments";
 
 export type LoggedOutStackParamList = {
   Auth: { isCreating: boolean };
@@ -25,8 +27,10 @@ export type LoggedInNavParamList = {
   Search: {};
   Profile: {};
   Notification: {};
-  Me: {};
+  Me: any;
   Photo: {};
+  Likes: any;
+  Comments: any;
 };
 
 export const LoggedOutNav = createStackNavigator<LoggedOutStackParamList>();
@@ -76,6 +80,8 @@ export const StackNavFactory: React.FC<StackNavFactoryProp> = ({
         <Stack.Screen name={screenName} component={MePage} />
       )}
       <Stack.Screen name="Profile" component={ProfilePage} />
+      <Stack.Screen name="Likes" component={LikesPage} />
+      <Stack.Screen name="Comments" component={CommentsPage} />
       <Stack.Screen name="Photo" component={PhotoPage} />
     </Stack.Navigator>
   );

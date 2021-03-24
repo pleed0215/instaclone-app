@@ -95,3 +95,20 @@ asset을 load하는 곳에서 token도 읽어오도록 하자.
 ```
 
 이런 형태의 코드는 좀.. 잘 적응되지 않는다..
+
+7. TouchableOpacity가 text 길이 fit 되는 사이즈를 갖게 하려면..
+   width: auto 이런거 안됨.
+
+   https://stackoverflow.com/questions/61829929/react-native-how-to-make-touchableopacity-shrink-to-fit-text-contents
+
+```tsx
+const Header = styled.TouchableOpacity`
+  padding: 10px;
+  flex-direction: row;
+  align-items: center;
+  ...
+  align-self: flex-start;
+`;
+```
+
+alignSelf: 'flex-start' 옵션을 주면 된다. 위 코드는 styled components를 이용한 코드라 형태가 약간 다르다.
