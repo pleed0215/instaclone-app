@@ -12,6 +12,7 @@ const SView = styled.View`
   background-color: ${(props) => props.theme.background.primary};
   align-items: center;
   justify-content: center;
+  padding-bottom: 10px;
 `;
 
 export const ScreenLayout: React.FC<ScreenLayoutProp> = ({

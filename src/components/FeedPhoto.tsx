@@ -7,6 +7,7 @@ import { QuerySeeFeeds_seeFeeds_feeds } from "../codegen/QuerySeeFeeds";
 import { LoggedInNavParamList } from "../routers/navs";
 import { useCustomTheme } from "../theme/theme";
 import { getPluralText } from "../util";
+import { LikeButton } from "./LikeButton";
 
 interface FeedPhotoProp {
   photo: QuerySeeFeeds_seeFeeds_feeds;
@@ -21,12 +22,12 @@ const Header = styled.TouchableOpacity`
   align-self: flex-start;
 `;
 const UserAvatar = styled.Image`
-  width: 30;
-  height: 30;
-  border-radius: 50;
-  border-width: 1;
+  width: 30px;
+  height: 30px;
+  border-radius: 15px;
+  border-width: 1px;
   border-color: ${(props) => props.theme.color.border};
-  margin-right: 10;
+  margin-right: 10px;
 `;
 const UsernameWrapper = styled.TouchableOpacity`
   align-self: flex-start;
@@ -97,23 +98,19 @@ export const FeedPhoto: React.FC<FeedPhotoProp> = ({ photo }) => {
         style={{ width: width, height: imageHeight }}
       />
       <Actions>
-        <Action>
-          <Ionicons
-            name={photo.isLiked ? "heart" : "heart-outline"}
-            size={15}
-            color={photo.isLiked ? theme.color.link : theme.color.primary}
-          />
-        </Action>
+        <LikeButton photoId={photo.id} isLiked={photo.isLiked} />
         <Action>
           <Ionicons
             name="chatbubble-outline"
-            size={15}
+            size={20}
             color={theme.color.primary}
           />
         </Action>
       </Actions>
       <ActionTextContainer>
-        <ActionTextWrapper onPress={() => navigation.navigate("Likes")}>
+        <ActionTextWrapper
+          onPress={() => navigation.navigate("Likes", { photoId: photo.id })}
+        >
           <ActionText>{getPluralText(photo.numLikes, "like")}</ActionText>
         </ActionTextWrapper>
         <ActionTextWrapper onPress={() => navigation.navigate("Comments")}>

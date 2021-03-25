@@ -3,6 +3,7 @@ import React from "react";
 import {
   createStackNavigator,
   StackNavigationProp,
+  StackScreenProps,
 } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { FeedPage } from "../pages/loggedin/feed";
@@ -28,9 +29,13 @@ export type LoggedInNavParamList = {
   Notification: {};
   Me: any;
   Photo: {};
-  Likes: any;
+  Likes: { photoId: number };
   Comments: any;
 };
+
+export type LoggedInScreenParam<
+  RouteName extends keyof LoggedInNavParamList
+> = StackScreenProps<LoggedInNavParamList, RouteName>;
 
 export const LoggedOutNav = createStackNavigator<LoggedOutStackParamList>();
 export const LoggedInNav = createBottomTabNavigator<LoggedInNavParamList>();

@@ -1,12 +1,12 @@
 import { StackScreenProps } from "@react-navigation/stack";
 import React from "react";
 
-import { TouchableOpacity } from "react-native-gesture-handler";
 import { LoggedOutStackParamList } from "../routers/navs";
 import styled from "styled-components/native";
 
 import { ButtonInactivable } from "../components/ButtonInactivable";
 import { AuthLayout } from "../components/AuthLayout";
+import { TouchableOpacity } from "react-native";
 
 const CreateAccountText = styled.Text`
   color: white;
@@ -27,7 +27,11 @@ export const WelcomePage: React.FC<
     navigation.navigate("Auth", { isCreating });
   return (
     <AuthLayout>
-      <ButtonInactivable onPress={() => goToAuth(true)} text="계정 만들기" />
+      <ButtonInactivable
+        fullWidth
+        onPress={() => goToAuth(true)}
+        text="계정 만들기"
+      />
       <TouchableOpacity onPress={() => goToAuth(false)}>
         <LoginText>로그인</LoginText>
       </TouchableOpacity>

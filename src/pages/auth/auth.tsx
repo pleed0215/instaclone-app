@@ -294,6 +294,7 @@ export const AuthPage: React.FC<AuthPageProp> = ({ navigation, route }) => {
         {error !== "" && <ErrorText>{error}</ErrorText>}
       </ErrorContainer>
       <ButtonInactivable
+        fullWidth
         disabled={!formState.isValid}
         onPress={handleSubmit(onValid)}
         text={isCreating ? "가입" : "로그인"}

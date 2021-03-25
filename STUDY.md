@@ -112,3 +112,70 @@ const Header = styled.TouchableOpacity`
 ```
 
 alignSelf: 'flex-start' 옵션을 주면 된다. 위 코드는 styled components를 이용한 코드라 형태가 약간 다르다.
+
+- refrehsing & onRefreshing..
+  요즘 앱들 보면 스크린을 맨 위에서 당기는 제스쳐에 리프레쉬 되는 것들을 많이 보는데..
+  그런 역할을 해주는 것이다.
+  ScreenLayout 컨테이너는 loading이면 loading screen 아니면 children을 렌더링 해주는 컴포넌트이다.
+  역시 다른 사람들의 코드를 잘 봐야하는 것.. 도움이 된다.
+
+```tsx
+<ScreenLayout loading={loading}>
+  <FlatList
+    refreshing={refreshing}
+    onRefresh={() => setRefreshing(true)}
+    data={data?.seeFeeds.feeds}
+    keyExtractor={(item: QuerySeeFeeds_seeFeeds_feeds) => `${item.id}`}
+    showsVerticalScrollIndicator={false}
+    renderItem={renderPhoto}
+  />
+</ScreenLayout>
+```
+
+## fetchMore
+
+와.. 이런게 있었네..
+fetchMore를 하면 바로 적용이 안되는 것을 알 수 있는데, cache 때문에 그렇다.
+fetch된 데이터는 cache에 저장이 되도록 되어 있는데, fetchMore를 하면 cache가 혼란?(자세한 이유는 검색을 아직 안해서 모르겠다)
+을 겪기 때문에 수동으로 fetchMore된 data를 merging해야 한다.
+
+merging는 client에서 설정을 해줘야 하는데..
+
+```ts
+typePolicies: {
+      Query: {
+        fields: {
+          seeFeeds: {
+            keyArgs: false,
+            merge(
+              exisiting: QuerySeeFeeds_seeFeeds,
+              incoming: QuerySeeFeeds_seeFeeds
+            ) {
+              if (incoming.ok && incoming.feeds) {
+                if (exisiting) {
+                  return exisiting.feeds
+                    ? {
+                        ...exisiting,
+                        feeds: [...exisiting.feeds, ...incoming.feeds],
+                      }
+                    : { ...exisiting, feeds: [...incoming.feeds] };
+                } else {
+                  return incoming;
+                }
+              }
+            },
+          },
+        },
+      },
+```
+
+니코는 간단하고 했지만 사실 니코와 다르게 코딩을 했기 때문에 위와 같이 코드가 좀 복잡해졌다. null이나 undefined를 걸러야 하기 때문에..
+pagination도 문제인게.. 마지막 페이지면...?? 더이상 fetching을 하면 안되는데...라는 문제도 있다.
+유틸리티 함수인
+
+```ts
+  offsetLimitPagination이라는 것이 있는데...
+  허허.. 나는 사용할 수 없는건가..
+```
+
+여태까지 배운 페이지네이션이 페이지기반만 배웠는데.. offset, limit pagination 개념을 조금 알아 놓으면 도움될 것 같다.
