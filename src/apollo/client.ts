@@ -13,8 +13,8 @@ import { authTokenVar } from "./vars";
 import { QuerySeeFeeds_seeFeeds } from "../codegen/QuerySeeFeeds";
 import { QuerySeeLikeUsers_seeLikeUsers } from "../codegen/QuerySeeLikeUsers";
 
-const HTTP_ENDPOINT = `https://e2b8bf6da616.ngrok.io/graphql`;
-const WS_ENDPOINT = `wss://e2b8bf6da616.ngrok.io/graphql`;
+const HTTP_ENDPOINT = `https://b302a7eb1b29.ngrok.io/graphql`;
+const WS_ENDPOINT = `wss://b302a7eb1b29.ngrok.io/graphql`;
 //const HTTP_ENDPOINT = `http://localhost:4000/graphql`;
 //const WS_ENDPOINT = `ws://localhost:4000/graphql`;
 
