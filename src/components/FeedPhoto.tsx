@@ -87,7 +87,9 @@ export const FeedPhoto: React.FC<FeedPhotoProp> = ({ photo }) => {
   return (
     <Container>
       <View>
-        <Header onPress={() => navigation.navigate("Profile", {})}>
+        <Header
+          onPress={() => navigation.navigate("Profile", { ...photo.user })}
+        >
           <UserAvatar source={{ uri: photo.user.avatar! }} />
           <Username>{photo.user.username}</Username>
         </Header>
@@ -118,7 +120,9 @@ export const FeedPhoto: React.FC<FeedPhotoProp> = ({ photo }) => {
         </ActionTextWrapper>
       </ActionTextContainer>
       <Caption>
-        <UsernameWrapper onPress={() => navigation.navigate("Profile", {})}>
+        <UsernameWrapper
+          onPress={() => navigation.navigate("Profile", { ...photo.user })}
+        >
           <Username>{photo.user.username}</Username>
         </UsernameWrapper>
         <CaptionText>{photo.caption}</CaptionText>

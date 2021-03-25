@@ -31,6 +31,10 @@ export interface SeeLikeUsersInput {
   photoId: number;
 }
 
+export interface SeePhotoDetailInput {
+  id: number;
+}
+
 export interface ToggleFollowUserInput {
   username: string;
 }

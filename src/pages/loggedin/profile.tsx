@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Text, View } from "react-native";
 import styled from "styled-components/native";
 import { LoggedInScreenParam } from "../../routers/navs";
@@ -16,8 +16,13 @@ const SText = styled.Text`
 
 export const ProfilePage: React.FC<LoggedInScreenParam<"Profile">> = ({
   navigation,
-  route,
+  route: {
+    params: { username, id },
+  },
 }) => {
+  useEffect(() => {
+    navigation.setOptions({ title: `${username}'s Profile` });
+  }, []);
   return (
     <SView>
       <SText>Profile</SText>

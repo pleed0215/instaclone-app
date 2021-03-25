@@ -7,21 +7,13 @@ import {
 import { useMe } from "../hooks/useMe";
 import styled from "styled-components/native";
 import { ActivityIndicator } from "react-native";
+import { GQL_TOGGLE_FOLLOW } from "../apollo/gqls";
 
 interface ToggleFollowPros {
   isFollowing: boolean;
 
   username: string;
 }
-
-const GQL_TOGGLE_FOLLOW = gql`
-  mutation MutationToggleFollow($input: ToggleFollowUserInput!) {
-    toggleFollow(input: $input) {
-      ok
-      error
-    }
-  }
-`;
 
 const SButton = styled.TouchableOpacity`
   width: 100px;

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { gql, useApolloClient, useMutation } from "@apollo/client";
 
 import styled from "styled-components/native";
-import { GQL_TOGGLE_LIKE } from "../apollo/gqls";
+import { GQL_TOGGLE_LIKE, GQL_PHOTO_LIKES } from "../apollo/gqls";
 import { useCustomTheme } from "../theme/theme";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -19,18 +19,7 @@ export const LikeButton: React.FC<LikeButtonProps> = ({ photoId, isLiked }) => {
   const theme = useCustomTheme();
   const client = useApolloClient();
   const [like, setLike] = useState(isLiked);
-  const [toggleLike] = useMutation(GQL_TOGGLE_LIKE, {
-    onCompleted: () => {
-      client.cache.modify({
-        id: `Photo:${photoId}`,
-        fields: {
-          numLikes(prev) {
-            return like ? prev + 1 : prev - 1;
-          },
-        },
-      });
-    },
-  });
+  const [toggleLike] = useMutation(GQL_TOGGLE_LIKE);
 
   const onLikeClicked = () => {
     toggleLike({
@@ -39,6 +28,16 @@ export const LikeButton: React.FC<LikeButtonProps> = ({ photoId, isLiked }) => {
           id: photoId,
         },
       },
+      refetchQueries: [
+        {
+          query: GQL_PHOTO_LIKES,
+          variables: {
+            input: {
+              photoId,
+            },
+          },
+        },
+      ],
     });
     setLike(!like);
   };

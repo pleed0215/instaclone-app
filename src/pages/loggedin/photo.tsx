@@ -19,7 +19,7 @@ type PhotoPageProp = StackScreenProps<LoggedInNavParamList, "Photo">;
 export const PhotoPage: React.FC<PhotoPageProp> = ({ navigation, route }) => {
   return (
     <SView>
-      <TouchableOpacity onPress={() => navigation.navigate("Profile", {})}>
+      <TouchableOpacity>
         <SText>Profile</SText>
       </TouchableOpacity>
     </SView>

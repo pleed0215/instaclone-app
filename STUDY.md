@@ -179,3 +179,8 @@ pagination도 문제인게.. 마지막 페이지면...?? 더이상 fetching을 �
 ```
 
 여태까지 배운 페이지네이션이 페이지기반만 배웠는데.. offset, limit pagination 개념을 조금 알아 놓으면 도움될 것 같다.
+
+apollo cache persist
+다 좋다 이거야.
+근데 갑자기 수정한 내용들이 반영이 안돼??
+persisCache의 옵션 중 serialize: false로 해보자.

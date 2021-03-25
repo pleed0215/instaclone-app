@@ -30,12 +30,11 @@ export default function App() {
   const mode = useColorScheme();
 
   const preload = async () => {
-    const persistor = new CachePersistor({
+    /*const persistor = new CachePersistor({
       cache,
       storage: new AsyncStorageWrapper(AsyncStorage),
-    });
-
-    await persistor.purge();
+      serialize: false,
+    });*/
 
     // auth token 설정
     const tokenFromStorage = await getTokenFromStorage();

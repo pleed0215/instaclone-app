@@ -49,11 +49,24 @@ export const GQL_PHOTO_LIKES = gql`
   }
 `;
 
-const GQL_TOGGLE_FOLLOW = gql`
+export const GQL_TOGGLE_FOLLOW = gql`
   mutation MutationToggleFollow($input: ToggleFollowUserInput!) {
     toggleFollow(input: $input) {
       ok
       error
     }
   }
+`;
+
+export const GQL_SEE_PHOTO_DETAIL = gql`
+  query QuerySeePhotoDetail($input: SeePhotoDetailInput!) {
+    seePhotoDetail(input: $input) {
+      ok
+      error
+      photo {
+        ...PartPhoto
+      }
+    }
+  }
+  ${PART_PHOTO}
 `;

@@ -25,7 +25,7 @@ export type LoggedOutStackParamList = {
 export type LoggedInNavParamList = {
   Feed: {};
   Search: {};
-  Profile: {};
+  Profile: { username: string; id: number };
   Notification: {};
   Me: any;
   Photo: {};

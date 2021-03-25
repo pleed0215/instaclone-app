@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import styled from "styled-components/native";
 import { makeLogout } from "../../apollo/vars";
+import { useMe } from "../../hooks/useMe";
+import { LoggedInScreenParam } from "../../routers/navs";
 
 const SView = styled.View`
   flex: 1;
@@ -18,7 +20,16 @@ const SText = styled.Text`
   border-radius: 4px;
 `;
 
-export const MePage = () => {
+export const MePage: React.FC<LoggedInScreenParam<"Me">> = ({
+  navigation,
+  route,
+}) => {
+  const { data: me } = useMe();
+  useEffect(() => {
+    navigation.setOptions({
+      title: me?.seeMe.username,
+    });
+  }, []);
   return (
     <SView>
       <TouchableOpacity onPress={() => makeLogout()}>

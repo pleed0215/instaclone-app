@@ -68,7 +68,9 @@ export const ProfileFollow: React.FC<ProfileFollowProp> = ({ user }) => {
   } else {
     return (
       <Container>
-        <ProfileContainer onPress={() => navigation.navigate("Profile", {})}>
+        <ProfileContainer
+          onPress={() => navigation.navigate("Profile", { ...user })}
+        >
           {user.avatar && (
             <Avatar source={{ uri: user.avatar }} resizeMode="contain" />
           )}

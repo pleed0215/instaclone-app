@@ -48,7 +48,7 @@ export const LikesPage: React.FC<LoggedInScreenParam<"Likes">> = ({
 
   const onRefresh = async () => {
     setRefreshing(true);
-    await refetch({ input: { page: 1 } });
+    await refetch({ input: { photoId, page: 1 } });
     setRefreshing(false);
   };
   const onEndReached = async () => {
