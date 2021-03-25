@@ -19,7 +19,18 @@ export const LikeButton: React.FC<LikeButtonProps> = ({ photoId, isLiked }) => {
   const theme = useCustomTheme();
   const client = useApolloClient();
   const [like, setLike] = useState(isLiked);
-  const [toggleLike] = useMutation(GQL_TOGGLE_LIKE);
+  const [toggleLike] = useMutation(GQL_TOGGLE_LIKE, {
+    onCompleted: (data) => {
+      client.cache.modify({
+        id: `Photo:${photoId}`,
+        fields: {
+          numLikes(prev) {
+            return like ? prev + 1 : prev - 1;
+          },
+        },
+      });
+    }
+  });
 
   const onLikeClicked = () => {
     toggleLike({
