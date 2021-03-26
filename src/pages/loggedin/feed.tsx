@@ -47,8 +47,10 @@ export const FeedPage = () => {
     setRefreshing(false);
   };
   const onEndReached = async () => {
-    setPage((page) => page + 1);
-    await fetchMore({ variables: { input: { page: page + 1, pageSize } } });
+    if (!loading && data?.seeFeeds.totalPage! > page) {
+      await fetchMore({ variables: { input: { page: page + 1, pageSize } } });
+      setPage((page) => page + 1);
+    }
   };
 
   return (

@@ -43,7 +43,7 @@ export const LikesPage: React.FC<LoggedInScreenParam<"Likes">> = ({
         pageSize: 10,
       },
     },
-    onCompleted: (data) => {},
+    fetchPolicy: "network-only",
   });
 
   const onRefresh = async () => {
@@ -52,8 +52,10 @@ export const LikesPage: React.FC<LoggedInScreenParam<"Likes">> = ({
     setRefreshing(false);
   };
   const onEndReached = async () => {
-    setPage((page) => page + 1);
-    await fetchMore({ variables: { input: { photoId, page: page + 1 } } });
+    if (!loading && data?.seeLikeUsers.totalPage! > page) {
+      await fetchMore({ variables: { input: { photoId, page: page + 1 } } });
+      setPage((page) => page + 1);
+    }
   };
   const renderItem: ListRenderItem<QuerySeeLikeUsers_seeLikeUsers_likeUsers> = ({
     item,

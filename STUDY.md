@@ -179,6 +179,10 @@ pagination도 문제인게.. 마지막 페이지면...?? 더이상 fetching을 �
 ```
 
 여태까지 배운 페이지네이션이 페이지기반만 배웠는데.. offset, limit pagination 개념을 조금 알아 놓으면 도움될 것 같다.
+pagination에 더불어서 cache를 다루는 방법을 조금 더 알아야 되는 것이..cache의 merge에 대해 조금더... 알아야 한다..
+아니그러면, 앱 동작이 재미없을 것 같다.
+
+https://www.apollographql.com/docs/react/caching/cache-field-behavior/#the-merge-function
 
 apollo cache persist
 다 좋다 이거야.
