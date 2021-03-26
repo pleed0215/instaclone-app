@@ -10,6 +10,7 @@ const SView = styled.View`
   background-color: ${(props) => props.theme.background.primary};
   align-items: center;
   justify-content: center;
+  flex: 1;
 `;
 
 const SText = styled.Text`

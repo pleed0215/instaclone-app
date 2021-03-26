@@ -1,6 +1,5 @@
 import React from "react";
-import { Keyboard, Platform } from "react-native";
-import { TouchableWithoutFeedback } from "react-native-gesture-handler";
+import { Keyboard, Platform, TouchableWithoutFeedback } from "react-native";
 
 export const DismissKeyboard: React.FC = ({ children }) => {
   const onPress = () => {
@@ -12,8 +11,7 @@ export const DismissKeyboard: React.FC = ({ children }) => {
     <TouchableWithoutFeedback
       onPress={onPress}
       style={{
-        flex: 0.5,
-        backgroundColor: "red",
+        flex: 1,
       }}
     >
       {children}
