@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import { PART_PHOTO } from "./fragments";
+import { PART_PHOTO, SMALL_USER } from "./fragments";
 
 export const GQL_SEE_FEEDS = gql`
   query QuerySeeFeeds($input: SeeFeedsInput!) {
@@ -69,4 +69,40 @@ export const GQL_SEE_PHOTO_DETAIL = gql`
     }
   }
   ${PART_PHOTO}
+`;
+
+export const GQL_SEARCH_PHOTO = gql`
+  query QuerySearchPhotos($input: SearchPhotoInput!) {
+    searchPhotos(input: $input) {
+      ok
+      error
+      currentPage
+      currentCount
+      totalPage
+      totalCount
+      pageSize
+      photos {
+        ...PartPhoto
+      }
+    }
+  }
+  ${PART_PHOTO}
+`;
+
+export const GQL_SEARCH_USER = gql`
+  query QuerySearchUser($input: SearchUserInput!) {
+    searchUser(input: $input) {
+      ok
+      error
+      currentPage
+      currentCount
+      totalPage
+      totalCount
+      pageSize
+      results {
+        ...SmallUser
+      }
+    }
+  }
+  ${SMALL_USER}
 `;

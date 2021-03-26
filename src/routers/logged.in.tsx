@@ -3,9 +3,18 @@ import { useCustomTheme } from "../theme/theme";
 import { LoggedInNav, StackNavFactory } from "./navs";
 import { Ionicons } from "@expo/vector-icons";
 import { PhotoPage } from "../pages/loggedin/photo";
+import { useMe } from "../hooks/useMe";
+import styled from "styled-components/native";
+
+const Avatar = styled.Image`
+  width: 30px;
+  height: 30px;
+  border-radius: 15px;
+`;
 
 export const LoggedInNavigation = () => {
   const theme = useCustomTheme();
+  const { data: me } = useMe();
   return (
     <LoggedInNav.Navigator
       tabBarOptions={{
@@ -78,13 +87,24 @@ export const LoggedInNavigation = () => {
       <LoggedInNav.Screen
         name="Me"
         options={{
-          tabBarIcon: ({ focused, color, size }) => (
-            <Ionicons
-              name={focused ? "person" : "person-outline"}
-              color={color}
-              size={focused ? size + 4 : size}
-            />
-          ),
+          tabBarIcon: ({ focused, color, size }) =>
+            me?.seeMe.avatar ? (
+              <Avatar
+                source={{ uri: me.seeMe.avatar }}
+                style={{
+                  ...(focused && {
+                    borderWidth: 2,
+                    borderColor: theme.color.border,
+                  }),
+                }}
+              />
+            ) : (
+              <Ionicons
+                name={focused ? "person" : "person-outline"}
+                color={color}
+                size={focused ? size + 4 : size}
+              />
+            ),
         }}
       >
         {() => <StackNavFactory screenName="Me" />}

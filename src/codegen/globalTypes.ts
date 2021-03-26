@@ -20,6 +20,18 @@ export interface LoginInput {
   password: string;
 }
 
+export interface SearchPhotoInput {
+  page?: number | null;
+  pageSize?: number | null;
+  keyword: string;
+}
+
+export interface SearchUserInput {
+  page?: number | null;
+  pageSize?: number | null;
+  keyword: string;
+}
+
 export interface SeeFeedsInput {
   page?: number | null;
   pageSize?: number | null;

@@ -78,3 +78,15 @@ export const PART_USER = gql`
   }
   ${SMALL_PART_PHOTO}
 `;
+
+export const SMALL_USER = gql`
+  fragment SmallUser on User {
+    id
+    username
+    email
+    firstName
+    avatar
+    isFollower
+    isFollowing
+  }
+`;
