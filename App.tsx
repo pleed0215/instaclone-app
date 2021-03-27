@@ -17,7 +17,7 @@ import {
   getTokenFromStorage,
   isLoggedInVar,
 } from "./src/apollo/vars";
-import { LoggedInNavigation } from "./src/routers/logged.in";
+import { LoggedInWrapperNavigation } from "./src/routers/logged.in";
 import {
   persistCache,
   CachePersistor,
@@ -72,7 +72,11 @@ export default function App() {
       <AppearanceProvider>
         <ThemeProvider theme={mode === "light" ? lightTheme : darkTheme}>
           <NavigationContainer>
-            {isLoggedIn ? <LoggedInNavigation /> : <LoggedOutNavigation />}
+            {isLoggedIn ? (
+              <LoggedInWrapperNavigation />
+            ) : (
+              <LoggedOutNavigation />
+            )}
           </NavigationContainer>
         </ThemeProvider>
       </AppearanceProvider>

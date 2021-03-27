@@ -6,6 +6,7 @@ import {
   StackScreenProps,
 } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { FeedPage } from "../pages/loggedin/feed";
 import { MePage } from "../pages/loggedin/me";
 import { ProfilePage } from "../pages/loggedin/profile";
@@ -28,17 +29,33 @@ export type LoggedInNavParamList = {
   Profile: { username: string; id: number };
   Notification: {};
   Me: any;
-  Photo: {};
+  Photo: { photoId: number };
   Likes: { photoId: number };
   Comments: any;
+  Camera: any;
+};
+
+export type LoggedInWrapperParamList = {
+  LoggedIn: any;
+  Upload: any;
+};
+
+export type UploadNavParamList = {
+  Select: any;
+  Take: any;
 };
 
 export type LoggedInScreenParam<
   RouteName extends keyof LoggedInNavParamList
 > = StackScreenProps<LoggedInNavParamList, RouteName>;
+export type LoggedInWrapperScreenParam<
+  RouteName extends keyof LoggedInWrapperParamList
+> = StackScreenProps<LoggedInWrapperParamList, RouteName>;
 
 export const LoggedOutNav = createStackNavigator<LoggedOutStackParamList>();
 export const LoggedInNav = createBottomTabNavigator<LoggedInNavParamList>();
+export const LoggedInWrapper = createStackNavigator<LoggedInWrapperParamList>();
+export const UploadTabNav = createMaterialTopTabNavigator<UploadNavParamList>();
 
 const Stack = createStackNavigator<LoggedInNavParamList>();
 interface StackNavFactoryProp {

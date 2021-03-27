@@ -7,6 +7,7 @@ import { QuerySeeFeeds_seeFeeds_feeds } from "../codegen/QuerySeeFeeds";
 import { LoggedInNavParamList } from "../routers/navs";
 import { useCustomTheme } from "../theme/theme";
 import { getPluralText } from "../util";
+import { Avatar } from "./Avatar";
 import { LikeButton } from "./LikeButton";
 
 interface FeedPhotoProp {
@@ -21,14 +22,7 @@ const Header = styled.TouchableOpacity`
   align-items: center;
   align-self: flex-start;
 `;
-const UserAvatar = styled.Image`
-  width: 30px;
-  height: 30px;
-  border-radius: 15px;
-  border-width: 1px;
-  border-color: ${(props) => props.theme.color.border};
-  margin-right: 10px;
-`;
+
 const UsernameWrapper = styled.TouchableOpacity`
   align-self: flex-start;
 `;
@@ -90,7 +84,7 @@ export const FeedPhoto: React.FC<FeedPhotoProp> = ({ photo }) => {
         <Header
           onPress={() => navigation.navigate("Profile", { ...photo.user })}
         >
-          <UserAvatar source={{ uri: photo.user.avatar! }} />
+          <Avatar uri={photo.user.avatar} size={30} color="gray" />
           <Username>{photo.user.username}</Username>
         </Header>
       </View>

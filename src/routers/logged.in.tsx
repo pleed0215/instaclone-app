@@ -1,10 +1,12 @@
 import React from "react";
 import { useCustomTheme } from "../theme/theme";
-import { LoggedInNav, StackNavFactory } from "./navs";
+import { LoggedInNav, LoggedInWrapper, StackNavFactory } from "./navs";
 import { Ionicons } from "@expo/vector-icons";
 import { PhotoPage } from "../pages/loggedin/photo";
 import { useMe } from "../hooks/useMe";
 import styled from "styled-components/native";
+import { UploadPage } from "../pages/loggedin/upload";
+import { View } from "react-native";
 
 const Avatar = styled.Image`
   width: 30px;
@@ -58,8 +60,16 @@ export const LoggedInNavigation = () => {
         {() => <StackNavFactory screenName="Search" />}
       </LoggedInNav.Screen>
       <LoggedInNav.Screen
-        name="Photo"
-        component={PhotoPage}
+        name="Camera"
+        component={View}
+        listeners={({ navigation }) => {
+          return {
+            tabPress: (e) => {
+              e.preventDefault();
+              navigation.navigate("Upload");
+            },
+          };
+        }}
         options={{
           tabBarIcon: ({ focused, color, size }) => (
             <Ionicons
@@ -110,5 +120,14 @@ export const LoggedInNavigation = () => {
         {() => <StackNavFactory screenName="Me" />}
       </LoggedInNav.Screen>
     </LoggedInNav.Navigator>
+  );
+};
+
+export const LoggedInWrapperNavigation = () => {
+  return (
+    <LoggedInWrapper.Navigator headerMode="none" mode="modal">
+      <LoggedInWrapper.Screen name="LoggedIn" component={LoggedInNavigation} />
+      <LoggedInWrapper.Screen name="Upload" component={UploadPage} />
+    </LoggedInWrapper.Navigator>
   );
 };

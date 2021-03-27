@@ -184,7 +184,8 @@ pagination에 더불어서 cache를 다루는 방법을 조금 더 알아야 되
 
 https://www.apollographql.com/docs/react/caching/cache-field-behavior/#the-merge-function
 
-apollo cache persist
+## apollo cache persist
+
 다 좋다 이거야.
 근데 갑자기 수정한 내용들이 반영이 안돼??
 persisCache의 옵션 중 serialize: false로 해보자.
@@ -192,3 +193,95 @@ persisCache의 옵션 중 serialize: false로 해보자.
 apollo 함수들 중에는 called라는 것도 있다.
 
 FlatList에는 numColumns라는 것도 있다.
+
+upload 파트와서 스크린구조가 바꼈다.
+logged in navigation은 bottom tab nav였는데..
+stack nav로 바꾸고, 첫 스크린을 tab nav로 바꾼다.
+-> 카메라를 모달로 호출하려고 .. 더 큰 네비게이션을 만든 것.
+
+```tsx
+<LoggedInNav.Screen
+  name="Camera"
+  component={View}
+  listeners={{ tabPress: () => alert("pressed") }}
+  options={{
+    tabBarIcon: ({ focused, color, size }) => (
+      <Ionicons
+        name={focused ? "camera" : "camera-outline"}
+        color={color}
+        size={focused ? size + 4 : size}
+      />
+    ),
+  }}
+/>
+```
+
+카메라쪽 스크린인데..listner는 event를 가지고 있다.
+마치 웹 이벤트처럼 defaultPrevent를 가지고 있는데.. 우리는 현재 카메라가 있는 bottom tab navigation안에 있는 stack navigation에서 제일 바깥 쪽에 있는 upload 스크린을 모달창으로 띄어야 한다.
+그래서 일시적으로 카메라를 눌렀을 때 나오는 페이지, 컴포넌트들이 나오게 막는 역할을 하는 것.
+
+```tsx
+listeners?: ScreenListeners<State, EventMap> | ((props: {
+        route: RouteProp<ParamList, RouteName>;
+        navigation: any;
+    }) => ScreenListeners<State, EventMap>);
+```
+
+또한 listener를 보면 Screen Prop을 가지면서 screen listener를 리턴해주는 함수가 될 수도 있다.
+그래서..
+
+```tsx
+listeners={({navigation})=> {
+          return {
+            tabPress: (e) => {
+              e.preventDefault();
+            },
+          }
+        }}
+```
+
+위 screen의 listener의 옵션은 이렇게 바뀔 수도 있다.
+다만 위에 navigation의 정의된 부분을 보면 navigation이 any이다. 그래서 typescript가 사용될 수 있는 부분은 아쉽게도 아닌데.. 이해가 되긴한다.
+네비게이션 간을 이동하려면 어쩔 수 없는 것인 것으로 생각된다.
+그리고 stack의 mode를 modal로 해놓으면.. 옆으로 이동하는 card형태와는 다른 밑에서 올라오는 형태의 스크린을 볼 수 있다.
+
+```tsx
+<LoggedInWrapper.Navigator headerMode="none" mode="modal">
+  <LoggedInWrapper.Screen name="LoggedIn" component={LoggedInNavigation} />
+  <LoggedInWrapper.Screen name="Upload" component={UploadPage} />
+</LoggedInWrapper.Navigator>
+```
+
+### Material Top Navigation
+
+```tsx
+<UploadTabNav.Navigator
+      tabBarPosition="bottom"
+      tabBarOptions={{
+        style: {
+          backgroundColor: theme.background.primary,
+          height: 70,
+          justifyContent: "flex-start",
+        },
+        activeTintColor: theme.color.link,
+        inactiveTintColor: theme.color.primary,
+        indicatorStyle: {
+          backgroundColor: theme.color.link,
+          marginBottom: 25,
+        },
+      }}
+    >
+```
+
+```tsx
+<UploadTabNav.Screen name="Select">
+  {() => (
+    <Stack.Navigator>
+      <Stack.Screen name="Select" component={SelectPhotoPage} />
+    </Stack.Navigator>
+  )}
+</UploadTabNav.Screen>
+```
+
+이런 형태는 정말.. 적응이 안되는 한편으로는.. 여기서 잘 배아 놔야 하는 것 같기도 하고..
+이런식으로 스크린을 만들면 select photo에서 마음에 안들면 뒤로가기 해서 다시 원래 화면으로 갈 수도 있는 것이다.

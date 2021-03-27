@@ -106,3 +106,16 @@ export const GQL_SEARCH_USER = gql`
   }
   ${SMALL_USER}
 `;
+
+export const GQL_PHOTO_DETAIL = gql`
+  query QueryPhotoDetail($input: SeePhotoDetailInput!) {
+    seePhotoDetail(input: $input) {
+      ok
+      error
+      photo {
+        ...PartPhoto
+      }
+    }
+  }
+  ${PART_PHOTO}
+`;

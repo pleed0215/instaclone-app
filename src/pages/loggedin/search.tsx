@@ -3,7 +3,12 @@ import { Ionicons } from "@expo/vector-icons";
 import { StackScreenProps } from "@react-navigation/stack";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Dimensions, ListRenderItem, TouchableOpacity } from "react-native";
+import {
+  Dimensions,
+  ListRenderItem,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import {
   FlatList,
   TouchableWithoutFeedback,
@@ -23,7 +28,7 @@ import {
 import { ControlledInput } from "../../components/ControlledInput";
 import { DismissKeyboard } from "../../components/DismissKeyboard";
 import { ScreenLayout } from "../../components/ScreenLayout";
-import { LoggedInNavParamList } from "../../routers/navs";
+import { LoggedInNavParamList, LoggedInScreenParam } from "../../routers/navs";
 import { getPluralText } from "../../util";
 import { ProfileFollow } from "../../components/ProfileFollow";
 import { FeedPhoto } from "../../components/FeedPhoto";
@@ -61,12 +66,14 @@ const TextInput = styled(ControlledInput)`
 
 const Image = styled.Image``;
 
-type SearchPageProp = StackScreenProps<LoggedInNavParamList, "Search">;
 interface FormProp {
   term: string;
 }
 
-export const SearchPage: React.FC<SearchPageProp> = ({ navigation, route }) => {
+export const SearchPage: React.FC<LoggedInScreenParam<"Search">> = ({
+  navigation,
+  route,
+}) => {
   const { watch, getValues, control, formState } = useForm<FormProp>({
     defaultValues: { term: "" },
   });
@@ -133,7 +140,9 @@ export const SearchPage: React.FC<SearchPageProp> = ({ navigation, route }) => {
     item,
     index,
   }) => (
-    <TouchableOpacity>
+    <TouchableOpacity
+      onPress={() => navigation.navigate("Photo", { photoId: item.id })}
+    >
       <Image
         source={{ uri: item.file }}
         style={{
@@ -150,33 +159,46 @@ export const SearchPage: React.FC<SearchPageProp> = ({ navigation, route }) => {
     <DismissKeyboard>
       <ScreenLayout loading={loadingSearchPhoto || loadingSearchUser}>
         {photos && users && (
-          <>
+          <View
+            style={{
+              alignItems: "flex-start",
+              flex: 1,
+              justifyContent: "flex-start",
+              width,
+            }}
+          >
             <TextResult>
               Username continas '{getValues("term")}':{" "}
               {getPluralText(users?.searchUser.totalCount!, "User")} found
             </TextResult>
-            <FlatList
-              data={users.searchUser.results}
-              renderItem={renderUser}
-              keyExtractor={(item) => `User: ${item.username}`}
-              style={{
-                borderWidth: 1,
-                borderColor: theme.color.border,
-                marginBottom: 20,
-              }}
-            />
+            {photos.searchPhotos.photos.length > 0 && (
+              <FlatList
+                data={users.searchUser.results}
+                renderItem={renderUser}
+                keyExtractor={(item) => `User: ${item.username}`}
+                style={{
+                  borderWidth: 1,
+                  borderColor: theme.color.border,
+                  marginBottom: 20,
+                  height: 0,
+                }}
+              />
+            )}
             <TextResult>
               Photo contains '{getValues("term")}' :{" "}
               {getPluralText(photos?.searchPhotos.totalCount!, "Photo")} found
             </TextResult>
-            <FlatList
-              data={photos.searchPhotos.photos}
-              numColumns={4}
-              renderItem={renderPhoto}
-              keyExtractor={(item) => `Photo: ${item.id}`}
-              style={{ width }}
-            />
-          </>
+            {users.searchUser.results &&
+              users.searchUser.results.length > 0 && (
+                <FlatList
+                  data={photos.searchPhotos.photos}
+                  numColumns={4}
+                  renderItem={renderPhoto}
+                  keyExtractor={(item) => `Photo: ${item.id}`}
+                  style={{ width }}
+                />
+              )}
+          </View>
         )}
       </ScreenLayout>
     </DismissKeyboard>

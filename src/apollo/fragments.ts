@@ -50,7 +50,7 @@ export const SMALL_PART_PHOTO = gql`
 export const PART_PHOTO = gql`
   fragment PartPhoto on Photo {
     ...SmallPartPhoto
-    comments(take: 2, orderBy: { createdAt: desc }) {
+    comments(take: 10, orderBy: { createdAt: desc }) {
       ...PartComment
     }
   }
