@@ -188,3 +188,7 @@ apollo cache persist
 다 좋다 이거야.
 근데 갑자기 수정한 내용들이 반영이 안돼??
 persisCache의 옵션 중 serialize: false로 해보자.
+
+apollo 함수들 중에는 called라는 것도 있다.
+
+FlatList에는 numColumns라는 것도 있다.
