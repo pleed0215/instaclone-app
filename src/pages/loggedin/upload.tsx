@@ -83,6 +83,7 @@ export const UploadPage: React.FC<LoggedInWrapperScreenParam<"Upload">> = ({
           <Stack.Navigator
             screenOptions={{
               headerBackTitleVisible: false,
+              headerShown: false,
               headerTintColor: theme.color.primary,
               headerStyle: {
                 backgroundColor: theme.background.primary,
@@ -93,7 +94,7 @@ export const UploadPage: React.FC<LoggedInWrapperScreenParam<"Upload">> = ({
             <Stack.Screen
               name="Select"
               component={TakePhotoPage}
-              options={{ headerTitle: "사진 찍기" }}
+              options={{ headerShown: false }}
             />
           </Stack.Navigator>
         )}

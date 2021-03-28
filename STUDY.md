@@ -285,3 +285,9 @@ listeners={({navigation})=> {
 
 이런 형태는 정말.. 적응이 안되는 한편으로는.. 여기서 잘 배아 놔야 하는 것 같기도 하고..
 이런식으로 스크린을 만들면 select photo에서 마음에 안들면 뒤로가기 해서 다시 원래 화면으로 갈 수도 있는 것이다.
+
+### Slider
+
+https://github.com/callstack/react-native-slider
+
+기본 슬라이더도 있는 모양인데 쓰는 이유가 있겠지..

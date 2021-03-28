@@ -27,32 +27,34 @@ const IconContainer = styled.View`
   right: 5px;
 `;
 
-export const SelectPhotoPage = () => {
+// @ts-ignore
+export const SelectPhotoPage = ({ navigation, route }) => {
   const theme = useCustomTheme();
   const [ok, setOk] = useState(false);
   const [photos, setPhotos] = useState<MediaLibrary.Asset[]>([]);
   const [choosen, setChoosen] = useState<Array<string>>([]);
-  const { width, height } = useWindowDimensions();
+  const [refreshing, setRefreshing] = useState(false);
+  const { width } = useWindowDimensions();
   const imageWidth = Math.floor((width - 3) / 4);
   const getPermissions = async () => {
-    const {
-      accessPrivileges,
-      canAskAgain,
-    } = await MediaLibrary.getPermissionsAsync();
-    if (accessPrivileges === "none" && canAskAgain) {
+    const { canAskAgain, granted } = await MediaLibrary.getPermissionsAsync();
+
+    if (!granted && canAskAgain) {
       const permission = await MediaLibrary.requestPermissionsAsync();
-      if (permission.accessPrivileges !== "none") {
+      if (permission.granted) {
         setOk(true);
         getPhotos();
       }
-    } else if (accessPrivileges !== "none") {
+    } else if (granted) {
       setOk(true);
       getPhotos();
     }
   };
   const getPhotos = async () => {
+    setRefreshing(true);
     const { assets } = await MediaLibrary.getAssetsAsync();
     setPhotos(assets);
+    setRefreshing(false);
   };
   const selected = (uri: string) => choosen.some((c) => c === uri);
   const toggleChoosen = (uri: string) => {
@@ -89,8 +91,15 @@ export const SelectPhotoPage = () => {
 
   useEffect(() => {
     getPermissions();
-    getPhotos();
   }, []);
+
+  console.log(navigation);
+  useEffect(() => {
+    if (navigation.isFocused()) {
+      getPhotos();
+    }
+  }, [navigation.isFocused()]);
+
   return (
     <Container>
       <Top>
@@ -100,6 +109,8 @@ export const SelectPhotoPage = () => {
       </Top>
       <Bottom>
         <FlatList
+          onRefresh={getPhotos}
+          refreshing={refreshing}
           data={photos}
           keyExtractor={(item) => `${item.id}`}
           renderItem={renderPhoto}
