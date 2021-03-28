@@ -313,3 +313,82 @@ Label같은 것.. 을 업데이트하고 싶으면.. 이렇게 써야 한다고 
 https://velog.io/@suyeonme/react-useLayout과-useEffect의-차이
 
 가장 큰 차이점은 실행 시점이다.
+
+### apollo upload client
+
+front에서 파일을 업로드하려면 설치해야 한다.
+client는 Upload graphql 스칼라를 이해하지 못하기 때문에..
+
+https://github.com/jaydenseric/apollo-upload-client
+https://www.npmjs.com/package/apollo-upload-client
+
+?? 그래도 안되는데... ??
+
+갑자기 client의 onErrorLink를 만들어야 한다고 하는데..
+
+```ts
+
+const onErrorLink = onError((error) => console.log(error));
+...
+authLink.concat(onErrorLink).concat(httpLink)
+// onError는 @apollo/client/link/error 에 있다.
+```
+
+이것말고도 링크가 많은가바!
+
+다시 에러 내용으로 돌아가서..
+ReactNativeFile은 어썸하긴한데, 또 웹에서는 이해를 못한다고..? 머야..
+
+그래서 이번에는 createUploadLink를 만들어야 한데.
+
+mutation이 끝난 후에는 onCompleted만 알았는데.. 이런 것도 있다.
+update
+(cache, result)를 인자로 받는다.
+
+이번에는 이 에러가..
+
+JSON Parse error: Unrecognized token '<'
+
+검색을 해보니...
+
+https://github.com/apollographql/apollo-feature-requests/issues/153
+
+.. 결론..
+위의 내용은 전혀 관련이 없다.
+... 이유인 즉슨.. 백엔드를 https 돌리기 위해 ngrok을 쓰고 있었는데..
+강의 중에 니코가 localtunnel을 써야 한다고 말한 적이 있었는데.. 가볍게 듣고 넘겼었다.
+아마 업로드 관련해서 ngrok은 뭔가가 막혀 있는 것 같다... ngrok 말고 localtunnel로 하니까 가볍게 통과되었다... 싯팔.
+
+..
+update를 하기에는 내가 너무 게으르다.
+설계가 잘못되었다.
+사실 인스타클론 강의를 들을 때 강의는 듣지만 구조는 조금 니코와 다르게 했었다.
+그런데.. 다 이유가 있었던 것..
+니코는 업로드하고 업로드 데이터를 받는다, 하지만 나는 받지 않았다.
+왜냐하면.. 그래도 되는 줄 알았어.
+그런데 캐쉬 업데이트를 하려면.. 데이터를 받으면 더 좋잖아.
+캐쉬 받아서 업데이트.
+결국 백엔드를 수정하거나, 리페치를 해야 하는데.. 백엔드 수정은 조금 구찮다... 구찮아도 해야지..
+-> 결국 백엔드 수정.. 생각보다 간단.. 나는 부지런한 사람.
+
+```tsx
+cache.modify({
+    id: "ROOT_QUERY",
+    fields: {
+
+        seeFeeds(prev) {
+              return {
+                ...prev,
+                feeds: [result.data?.uploadPhoto.photo, ...prev.feeds],
+              };
+            },
+      },
+    },
+  });
+}
+```
+
+id에 캐쉬가 아니라 쿼리가 들어갔다는 것이 중요하다.
+이번 기회에.. pagination의 남용이 얼마나 나쁜지.. 절실히 깨달았다....
+파지네이션을 남용하니까 코드가 어렵고 변경이 어렵다.
+어떤 페이지네이션을 사용해야를 결정하는게 중요하다.

@@ -55,6 +55,11 @@ export interface ToggleLikeInput {
   id: number;
 }
 
+export interface UploadPhotoInput {
+  file: any;
+  caption?: string | null;
+}
+
 //==============================================================
 // END Enums and Input Objects
 //==============================================================

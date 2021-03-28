@@ -119,3 +119,16 @@ export const GQL_PHOTO_DETAIL = gql`
   }
   ${PART_PHOTO}
 `;
+
+export const GQL_UPLOAD_PHOTO = gql`
+  mutation MutationUploadPhoto($input: UploadPhotoInput!) {
+    uploadPhoto(input: $input) {
+      ok
+      error
+      photo {
+        ...PartPhoto
+      }
+    }
+  }
+  ${PART_PHOTO}
+`;

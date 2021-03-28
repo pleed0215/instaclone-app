@@ -14,6 +14,14 @@ import { ControlledInput } from "../../components/ControlledInput";
 import { DismissKeyboard } from "../../components/DismissKeyboard";
 import { useCustomTheme } from "../../theme/theme";
 import { Ionicons } from "@expo/vector-icons";
+import { useMutation } from "@apollo/client";
+import {
+  MutationUploadPhoto,
+  MutationUploadPhotoVariables,
+} from "../../codegen/MutationUploadPhoto";
+import { GQL_UPLOAD_PHOTO } from "../../apollo/gqls";
+import { ReactNativeFile } from "extract-files";
+import { useMe } from "../../hooks/useMe";
 
 const Container = styled.KeyboardAvoidingView`
   background-color: ${(props) => props.theme.background.primary};
@@ -43,6 +51,35 @@ export const UploadFormPage: React.FC<
   });
   const theme = useCustomTheme();
   const [loading, setLoading] = useState(false);
+  const { data: me } = useMe();
+  const [uploadPhoto] = useMutation<
+    MutationUploadPhoto,
+    MutationUploadPhotoVariables
+  >(GQL_UPLOAD_PHOTO, {
+    onCompleted: (data) => {
+      setLoading(false);
+      if (data.uploadPhoto.ok) {
+        // @ts-ignore
+        navigation.navigate("Feed");
+      }
+    },
+    update: (cache, result) => {
+      if (result.data?.uploadPhoto.ok) {
+        cache.modify({
+          id: "ROOT_QUERY",
+          fields: {
+            seeFeeds(prev) {
+              return {
+                ...prev,
+                feeds: [result.data?.uploadPhoto.photo, ...prev.feeds],
+              };
+            },
+          },
+        });
+      }
+    },
+  });
+
   useEffect(() => {
     navigation.setOptions({
       headerRight: () =>
@@ -52,7 +89,7 @@ export const UploadFormPage: React.FC<
           <TouchableOpacity
             onPress={() => {
               if (formState.isValid) {
-                alert("짜쟌");
+                onValid();
               }
             }}
           >
@@ -77,11 +114,24 @@ export const UploadFormPage: React.FC<
       headerTintColor: theme.color.primary,
       headerStyle: { backgroundColor: theme.background.primary },
     });
-  }, [formState]);
+  }, [formState, loading]);
 
   const onValid = () => {
     const { caption } = getValues();
-    console.log(caption);
+    const file = new ReactNativeFile({
+      uri: localUri,
+      name: `${me?.seeMe.username}.jpg`,
+      type: "image/jpeg",
+    });
+    setLoading(true);
+    uploadPhoto({
+      variables: {
+        input: {
+          file,
+          caption,
+        },
+      },
+    });
   };
 
   return (

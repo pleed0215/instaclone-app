@@ -16,12 +16,14 @@ const Container = styled.View`
 const Actions = styled.View`
   flex: 0.2;
   justify-content: center;
+  background-color: ${(props) => props.theme.background.primary};
   align-items: center;
   padding: 3px 20px;
 `;
 
 const ActionsInner = styled.View`
   width: 100%;
+  background-color: ${(props) => props.theme.background.primary};
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
@@ -73,7 +75,7 @@ export const TakePhotoPage: React.FC = ({ navigation }) => {
   const [type, setType] = useState(Camera.Constants.Type.front);
   const [cameraReady, setCameraReady] = useState(false);
   const [firstPhoto, setFirstPhoto] = useState<string | null>();
-  const [thumbnail, setThumbnail] = useState<string>();
+  const [thumbnail, setThumbnail] = useState<string | null>();
 
   const toggleCameraType = () => {
     setType(
@@ -100,7 +102,8 @@ export const TakePhotoPage: React.FC = ({ navigation }) => {
 
   const getFirstPhoto = async () => {
     const { assets } = await MediaLibrary.getAssetsAsync();
-    setThumbnail(assets[0].uri);
+
+    setThumbnail(assets.length > 0 ? assets[0].uri : null);
   };
 
   const takePhoto = async () => {
@@ -134,6 +137,7 @@ export const TakePhotoPage: React.FC = ({ navigation }) => {
         },
       },
     ]);
+    navigation.navigate("UploadForm", { localUri: firstPhoto });
   };
 
   useEffect(() => {

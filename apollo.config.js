@@ -4,7 +4,7 @@ module.exports = {
     tagName: "gql",
     service: {
       name: "Instaclone app from nomadcoders",
-      url: "https://88bf3307a311.ngrok.io/graphql",
+      url: "https://witty-wasp-82.loca.lt/graphql",
     },
   },
 };

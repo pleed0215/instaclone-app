@@ -40,10 +40,15 @@ export const SelectPhotoPage = ({ navigation, route }) => {
   const { width } = useWindowDimensions();
   const imageWidth = Math.floor((width - 3) / 4);
   const getPermissions = async () => {
-    const { canAskAgain, granted } = await MediaLibrary.getPermissionsAsync();
-
+    const {
+      canAskAgain,
+      granted,
+      status,
+      accessPrivileges,
+    } = await MediaLibrary.getPermissionsAsync();
     if (!granted && canAskAgain) {
       const permission = await MediaLibrary.requestPermissionsAsync();
+
       if (permission.granted) {
         setOk(true);
         getPhotos();

@@ -7,6 +7,7 @@ import {
 } from "@apollo/client";
 import { WebSocketLink } from "@apollo/client/link/ws";
 import { setContext } from "@apollo/client/link/context";
+import { onError } from "@apollo/client/link/error";
 
 import { getMainDefinition } from "@apollo/client/utilities";
 import { authTokenVar } from "./vars";
@@ -15,9 +16,10 @@ import {
   QuerySeeLikeUsers_seeLikeUsers,
   QuerySeeLikeUsers_seeLikeUsers_likeUsers,
 } from "../codegen/QuerySeeLikeUsers";
+import { createUploadLink } from "apollo-upload-client";
 
-const HTTP_ENDPOINT = `https://88bf3307a311.ngrok.io/graphql`;
-const WS_ENDPOINT = `wss://88bf3307a311.ngrok.io/graphql`;
+const HTTP_ENDPOINT = `https://witty-wasp-82.loca.lt/graphql`;
+const WS_ENDPOINT = `wss://witty-wasp-82.loca.lt/graphql`;
 //const HTTP_ENDPOINT = `http://localhost:4000/graphql`;
 //const WS_ENDPOINT = `ws://localhost:4000/graphql`;
 
@@ -102,6 +104,11 @@ export const cache = new InMemoryCache({
 });
 
 const httpLink = createHttpLink({ uri: HTTP_ENDPOINT });
+const onErrorLink = onError(({ graphQLErrors, networkError }) => {
+  if (graphQLErrors) console.log("GraphQL Error", graphQLErrors);
+  if (networkError) console.log("Network Error", networkError);
+});
+const uploadLink = createUploadLink({ uri: HTTP_ENDPOINT });
 const wsLink = new WebSocketLink({
   uri: WS_ENDPOINT,
   options: {
@@ -129,7 +136,7 @@ const splitLink = split(
     );
   },
   wsLink,
-  authLink.concat(httpLink)
+  authLink.concat(onErrorLink).concat(uploadLink)
 );
 
 export const apolloClient = new ApolloClient({
