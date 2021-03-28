@@ -1,11 +1,11 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Camera } from "expo-camera";
 import React, { useEffect, useRef, useState } from "react";
-import { Image, StatusBar, TouchableOpacity } from "react-native";
+import { Alert, Image, StatusBar, TouchableOpacity } from "react-native";
 import styled from "styled-components/native";
 import Slider from "@react-native-community/slider";
 import * as MediaLibrary from "expo-media-library";
-import { useNavigation } from "@react-navigation/core";
+import { useIsFocused, useNavigation } from "@react-navigation/core";
 import { FlashButton } from "../../components/FlashButton";
 
 const Container = styled.View`
@@ -59,6 +59,10 @@ const ThumbnailContainer = styled.View`
 `;
 
 const ToggleCameraType = styled.TouchableOpacity``;
+const InnerText = styled.Text`
+  color: ${(props) => props.theme.color.primary};
+  font-size: 25px;
+`;
 
 // @ts-ignore
 export const TakePhotoPage: React.FC = ({ navigation }) => {
@@ -69,6 +73,7 @@ export const TakePhotoPage: React.FC = ({ navigation }) => {
   const [type, setType] = useState(Camera.Constants.Type.front);
   const [cameraReady, setCameraReady] = useState(false);
   const [firstPhoto, setFirstPhoto] = useState<string | null>();
+  const [thumbnail, setThumbnail] = useState<string>();
 
   const toggleCameraType = () => {
     setType(
@@ -95,7 +100,7 @@ export const TakePhotoPage: React.FC = ({ navigation }) => {
 
   const getFirstPhoto = async () => {
     const { assets } = await MediaLibrary.getAssetsAsync();
-    setFirstPhoto(assets[0].uri);
+    setThumbnail(assets[0].uri);
   };
 
   const takePhoto = async () => {
@@ -105,73 +110,119 @@ export const TakePhotoPage: React.FC = ({ navigation }) => {
         quality: 1,
         exif: true,
       });
-      //await MediaLibrary.saveToLibraryAsync(result.uri);
-      await MediaLibrary.createAssetAsync(result.uri);
       setFirstPhoto(result.uri);
     }
+  };
+
+  const onUploadAndSave = () => {
+    Alert.alert("사진 업로드", "사진을 라이브러리에 저장하시고 업로드할까요?", [
+      {
+        text: "저장하고 업로드",
+        onPress: async () => {
+          if (firstPhoto) {
+            await MediaLibrary.createAssetAsync(firstPhoto);
+            //MediaLibrary.saveToLibraryAsync(firstPhoto);
+            Alert.alert("저장완료", "사진을 저장했습니다");
+          }
+        },
+      },
+      {
+        text: "저장하지 않고 업로드",
+        style: "destructive",
+        onPress: () => {
+          console.log("저장하지 않고 업로드");
+        },
+      },
+    ]);
   };
 
   useEffect(() => {
     getPermission();
     getFirstPhoto();
   }, []);
-
+  const isFocused = useIsFocused();
   return (
     <Container>
-      <StatusBar hidden />
-      <Camera
-        type={type}
-        style={{ flex: 1 }}
-        zoom={zoom}
-        flashMode={flashMode}
-        ref={camera}
-        onCameraReady={() => setCameraReady(true)}
-      >
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={{ position: "absolute", top: 50, left: 20 }}
-        >
-          <Ionicons name="close-circle" color="white" size={30} />
-        </TouchableOpacity>
-      </Camera>
-      <Actions>
-        <ActionsInner>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            {firstPhoto ? (
-              <Image
-                source={{ uri: firstPhoto }}
-                style={{
-                  width: 35,
-                  height: 35,
-                  borderRadius: 5,
-                  borderColor: "white",
-                  borderWidth: 1,
-                }}
+      {isFocused && <StatusBar hidden />}
+      {!firstPhoto || firstPhoto === "" ? (
+        <>
+          <Camera
+            type={type}
+            style={{ flex: 1 }}
+            zoom={zoom}
+            flashMode={flashMode}
+            ref={camera}
+            onCameraReady={() => setCameraReady(true)}
+          >
+            <TouchableOpacity
+              onPress={() => navigation.goBack()}
+              style={{ position: "absolute", top: 50, left: 20 }}
+            >
+              <Ionicons name="close-circle" color="white" size={30} />
+            </TouchableOpacity>
+          </Camera>
+          <Actions>
+            <ActionsInner>
+              <TouchableOpacity onPress={() => navigation.goBack()}>
+                {thumbnail ? (
+                  <Image
+                    source={{ uri: thumbnail }}
+                    style={{
+                      width: 35,
+                      height: 35,
+                      borderRadius: 5,
+                      borderColor: "white",
+                      borderWidth: 1,
+                    }}
+                  />
+                ) : (
+                  <ThumbnailContainer />
+                )}
+              </TouchableOpacity>
+              <TakePhoto onPress={takePhoto}>
+                <TakePhotoInner />
+              </TakePhoto>
+              <ToggleCameraType onPress={toggleCameraType}>
+                <Ionicons name="camera-reverse" color="white" size={25} />
+              </ToggleCameraType>
+            </ActionsInner>
+            <SliderContainer>
+              <Slider
+                style={{ width: 200, height: 40 }}
+                minimumValue={0}
+                maximumValue={0.3}
+                step={0.005}
+                minimumTrackTintColor="#FFFFFF"
+                maximumTrackTintColor="#000000"
+                onValueChange={onZoomValueChange}
               />
-            ) : (
-              <ThumbnailContainer />
-            )}
-          </TouchableOpacity>
-          <TakePhoto onPress={takePhoto}>
-            <TakePhotoInner />
-          </TakePhoto>
-          <ToggleCameraType onPress={toggleCameraType}>
-            <Ionicons name="camera-reverse" color="white" size={25} />
-          </ToggleCameraType>
-        </ActionsInner>
-        <SliderContainer>
-          <Slider
-            style={{ width: 200, height: 40 }}
-            minimumValue={0}
-            maximumValue={0.3}
-            step={0.005}
-            minimumTrackTintColor="#FFFFFF"
-            maximumTrackTintColor="#000000"
-            onValueChange={onZoomValueChange}
-          />
-          <FlashButton value={flashMode} setValue={setFlashMode} />
-        </SliderContainer>
-      </Actions>
+              <FlashButton value={flashMode} setValue={setFlashMode} />
+            </SliderContainer>
+          </Actions>
+        </>
+      ) : (
+        <>
+          <Image source={{ uri: firstPhoto }} style={{ flex: 1 }} />
+          <Actions>
+            <ActionsInner style={{ paddingHorizontal: 40 }}>
+              <TouchableOpacity
+                onPress={() => {
+                  setFirstPhoto(null);
+                }}
+              >
+                <InnerText style={{ color: "red", fontSize: 25 }}>
+                  다시 찍기
+                </InnerText>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={onUploadAndSave}>
+                <InnerText style={{ color: "cyan", fontSize: 25 }}>
+                  업로드&저장
+                </InnerText>
+              </TouchableOpacity>
+            </ActionsInner>
+          </Actions>
+        </>
+      )}
     </Container>
   );
 };

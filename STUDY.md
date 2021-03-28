@@ -291,3 +291,18 @@ listeners={({navigation})=> {
 https://github.com/callstack/react-native-slider
 
 기본 슬라이더도 있는 모양인데 쓰는 이유가 있겠지..
+
+### React Native Alert
+
+문서 참고.
+style
+onPress
+text
+
+### useLayoutEffect
+
+사진 가져오기에 headerRight를 state 관련되도록 만들어 놨는데..
+state 업데이트가 안되어서 검색을 해보니..
+useLayoutEffect라는 것을 사용했어야 한다. 기존에는 useEffect에 넣어서.. state update가 안되었는데..
+
+Label같은 것.. 을 업데이트하고 싶으면.. 이렇게 써야 한다고 한다.

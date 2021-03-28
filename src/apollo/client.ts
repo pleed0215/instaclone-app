@@ -16,8 +16,8 @@ import {
   QuerySeeLikeUsers_seeLikeUsers_likeUsers,
 } from "../codegen/QuerySeeLikeUsers";
 
-const HTTP_ENDPOINT = `https://9371dfc8a6d5.ngrok.io/graphql`;
-const WS_ENDPOINT = `wss://9371dfc8a6d5.ngrok.io/graphql`;
+const HTTP_ENDPOINT = `https://c1cd0a676b71.ngrok.io/graphql`;
+const WS_ENDPOINT = `wss://c1cd0a676b71.ngrok.io/graphql`;
 //const HTTP_ENDPOINT = `http://localhost:4000/graphql`;
 //const WS_ENDPOINT = `ws://localhost:4000/graphql`;
 

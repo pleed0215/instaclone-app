@@ -26,6 +26,7 @@ export const UploadPage: React.FC<LoggedInWrapperScreenParam<"Upload">> = ({
   route,
 }) => {
   const theme = useCustomTheme();
+
   return (
     <UploadTabNav.Navigator
       tabBarPosition="bottom"
@@ -46,30 +47,7 @@ export const UploadPage: React.FC<LoggedInWrapperScreenParam<"Upload">> = ({
     >
       <UploadTabNav.Screen name="Select">
         {() => (
-          <Stack.Navigator
-            screenOptions={{
-              headerRight: () => (
-                <TouchableOpacity>
-                  <Text
-                    style={{
-                      color: theme.color.link,
-                      marginRight: 15,
-                      fontWeight: "600",
-                      fontSize: 16,
-                    }}
-                  >
-                    올리기
-                  </Text>
-                </TouchableOpacity>
-              ),
-              headerBackTitleVisible: false,
-              headerBackImage: ({ tintColor }) => (
-                <Ionicons name="close" color={tintColor} size={28} />
-              ),
-              headerTintColor: theme.color.primary,
-              headerStyle: { backgroundColor: theme.background.primary },
-            }}
-          >
+          <Stack.Navigator>
             <Stack.Screen
               name="Select"
               component={SelectPhotoPage}

@@ -1,10 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import * as MediaLibrary from "expo-media-library";
 import styled from "styled-components/native";
-import { FlatList, ListRenderItem, TouchableOpacity } from "react-native";
+import {
+  FlatList,
+  ListRenderItem,
+  StatusBar,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { Image, useWindowDimensions } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useCustomTheme } from "../../theme/theme";
+import { useIsFocused } from "@react-navigation/core";
 
 const Container = styled.View`
   flex: 1;
@@ -20,11 +28,6 @@ const Bottom = styled.View`
 
 const ImageContainer = styled.TouchableOpacity`
   position: relative;
-`;
-const IconContainer = styled.View`
-  position: absolute;
-  bottom: 0;
-  right: 5px;
 `;
 
 // @ts-ignore
@@ -64,6 +67,7 @@ export const SelectPhotoPage = ({ navigation, route }) => {
       setChoosen((prev) => [uri, ...prev]);
     }
   };
+  const isFocused = useIsFocused();
 
   const renderPhoto: ListRenderItem<MediaLibrary.Asset> = ({ item, index }) => {
     return (
@@ -76,15 +80,30 @@ export const SelectPhotoPage = ({ navigation, route }) => {
             ...(index % 4 !== 3 && { marginRight: 1 }),
           }}
         />
-        <IconContainer>
-          {selected(item.uri) && (
+
+        {selected(item.uri) && (
+          <View
+            style={{
+              width: 19,
+              height: 19,
+              alignItems: "center",
+              justifyContent: "center",
+              position: "absolute",
+              right: 5,
+              bottom: 5,
+              borderRadius: 9.5,
+              borderColor: "white",
+              backgroundColor: "white",
+            }}
+          >
             <Ionicons
-              name="checkbox-sharp"
-              size={20}
+              name="checkmark-circle"
+              size={19}
               color={theme.color.link}
+              style={{ right: -1 }}
             />
-          )}
-        </IconContainer>
+          </View>
+        )}
       </ImageContainer>
     );
   };
@@ -93,7 +112,37 @@ export const SelectPhotoPage = ({ navigation, route }) => {
     getPermissions();
   }, []);
 
-  console.log(navigation);
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity
+          onPress={() => {
+            if (choosen.length > 0) {
+              navigation.navigate("UploadForm", { localUri: choosen[0] });
+            }
+          }}
+        >
+          <Text
+            style={{
+              color: choosen.length > 0 ? theme.color.link : "gray",
+              marginRight: 15,
+              fontWeight: "600",
+              fontSize: 16,
+            }}
+          >
+            올리기
+          </Text>
+        </TouchableOpacity>
+      ),
+      headerBackTitleVisible: false,
+      headerBackImage: ({ tintColor }: { tintColor: string }) => (
+        <Ionicons name="close" color={tintColor} size={28} />
+      ),
+      headerTintColor: theme.color.primary,
+      headerStyle: { backgroundColor: theme.background.primary },
+    });
+  }, [choosen]);
+
   useEffect(() => {
     if (navigation.isFocused()) {
       getPhotos();
@@ -102,6 +151,7 @@ export const SelectPhotoPage = ({ navigation, route }) => {
 
   return (
     <Container>
+      {isFocused && <StatusBar hidden={false} />}
       <Top>
         {choosen.length > 0 && (
           <Image source={{ uri: choosen[0] }} style={{ flex: 1 }} />

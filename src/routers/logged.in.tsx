@@ -7,6 +7,7 @@ import { useMe } from "../hooks/useMe";
 import styled from "styled-components/native";
 import { UploadPage } from "../pages/loggedin/upload";
 import { View } from "react-native";
+import { UploadFormPage } from "../pages/loggedin/upload.form";
 
 const Avatar = styled.Image`
   width: 30px;
@@ -124,10 +125,34 @@ export const LoggedInNavigation = () => {
 };
 
 export const LoggedInWrapperNavigation = () => {
+  const theme = useCustomTheme();
   return (
-    <LoggedInWrapper.Navigator headerMode="none" mode="modal">
-      <LoggedInWrapper.Screen name="LoggedIn" component={LoggedInNavigation} />
-      <LoggedInWrapper.Screen name="Upload" component={UploadPage} />
+    <LoggedInWrapper.Navigator mode="modal">
+      <LoggedInWrapper.Screen
+        name="LoggedIn"
+        options={{ headerShown: false }}
+        component={LoggedInNavigation}
+      />
+      <LoggedInWrapper.Screen
+        name="Upload"
+        options={{ headerShown: false }}
+        component={UploadPage}
+      />
+      <LoggedInWrapper.Screen
+        name="UploadForm"
+        options={{
+          headerTintColor: theme.color.primary,
+          title: "업로드",
+          headerBackTitleVisible: false,
+          headerBackImage: ({ tintColor }) => (
+            <Ionicons name="close" color={tintColor} size={20} />
+          ),
+          headerStyle: {
+            backgroundColor: theme.background.primary,
+          },
+        }}
+        component={UploadFormPage}
+      />
     </LoggedInWrapper.Navigator>
   );
 };
