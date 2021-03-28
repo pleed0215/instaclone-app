@@ -1,5 +1,10 @@
 import React from "react";
-import { Control, Controller, RegisterOptions } from "react-hook-form";
+import {
+  Control,
+  Controller,
+  FieldValues,
+  RegisterOptions,
+} from "react-hook-form";
 import { TextInputProps, TextInput } from "react-native";
 import styled from "styled-components/native";
 

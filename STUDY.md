@@ -306,3 +306,10 @@ state 업데이트가 안되어서 검색을 해보니..
 useLayoutEffect라는 것을 사용했어야 한다. 기존에는 useEffect에 넣어서.. state update가 안되었는데..
 
 Label같은 것.. 을 업데이트하고 싶으면.. 이렇게 써야 한다고 한다.
+
+->> 유 퍽킹 가이. 이게 문제가 아니라 useEffect 업데이트를 아무것도 안 넣어서, 초기에만 useEffect 콜백함수가 실행되서 그런 것이다.
+참고로 useEffect와 useLayoutEffect의 차이점은..
+
+https://velog.io/@suyeonme/react-useLayout과-useEffect의-차이
+
+가장 큰 차이점은 실행 시점이다.

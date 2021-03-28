@@ -38,6 +38,7 @@ export type LoggedInNavParamList = {
 export type LoggedInWrapperParamList = {
   LoggedIn: any;
   Upload: any;
+  UploadForm: { localUri: string };
 };
 
 export type UploadNavParamList = {
