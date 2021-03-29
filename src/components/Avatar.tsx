@@ -26,6 +26,7 @@ const AvatarEmpty = styled.View<{ size: number }>`
   background-color: rgb(190, 190, 190);
   align-items: center;
   justify-content: center;
+  position: relative;
 `;
 
 export const Avatar: React.FC<AvatarProp> = ({ size, color, uri }) => {

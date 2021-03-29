@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import { PART_PHOTO, SMALL_USER } from "./fragments";
+import { PART_PHOTO, PART_ROOM, SMALL_USER } from "./fragments";
 
 export const GQL_SEE_FEEDS = gql`
   query QuerySeeFeeds($input: SeeFeedsInput!) {
@@ -131,4 +131,17 @@ export const GQL_UPLOAD_PHOTO = gql`
     }
   }
   ${PART_PHOTO}
+`;
+
+export const GQL_SEE_ROOMS = gql`
+  query QuerySeeRooms {
+    seeRooms {
+      ok
+      error
+      rooms {
+        ...PartRoom
+      }
+    }
+  }
+  ${PART_ROOM}
 `;

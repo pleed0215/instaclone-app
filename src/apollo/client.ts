@@ -18,8 +18,8 @@ import {
 } from "../codegen/QuerySeeLikeUsers";
 import { createUploadLink } from "apollo-upload-client";
 
-const HTTP_ENDPOINT = `https://witty-wasp-82.loca.lt/graphql`;
-const WS_ENDPOINT = `wss://witty-wasp-82.loca.lt/graphql`;
+const HTTP_ENDPOINT = `https://brave-seahorse-89.loca.lt/graphql`;
+const WS_ENDPOINT = `wss://brave-seahorse-89.loca.lt/graphql`;
 //const HTTP_ENDPOINT = `http://localhost:4000/graphql`;
 //const WS_ENDPOINT = `ws://localhost:4000/graphql`;
 

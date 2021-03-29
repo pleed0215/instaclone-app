@@ -58,6 +58,7 @@ export const UploadFormPage: React.FC<
   >(GQL_UPLOAD_PHOTO, {
     onCompleted: (data) => {
       setLoading(false);
+      console.log(data);
       if (data.uploadPhoto.ok) {
         // @ts-ignore
         navigation.navigate("Feed");

@@ -1,6 +1,12 @@
 import { useQuery } from "@apollo/client";
 import React, { useState } from "react";
-import { FlatList, Text, View, ListRenderItem } from "react-native";
+import {
+  FlatList,
+  Text,
+  View,
+  ListRenderItem,
+  ActivityIndicator,
+} from "react-native";
 import styled from "styled-components/native";
 import { GQL_SEE_FEEDS } from "../../apollo/gqls";
 import {
@@ -25,6 +31,7 @@ const SText = styled.Text`
 export const FeedPage = () => {
   const pageSize = 2;
   const [page, setPage] = useState(1);
+  const [fetching, setFetching] = useState(false);
   const { data, loading, refetch, fetchMore } = useQuery<
     QuerySeeFeeds,
     QuerySeeFeedsVariables
@@ -35,6 +42,7 @@ export const FeedPage = () => {
         pageSize,
       },
     },
+    onCompleted: () => setFetching(false),
   });
   const renderPhoto: ListRenderItem<QuerySeeFeeds_seeFeeds_feeds> = ({
     item,
@@ -48,6 +56,7 @@ export const FeedPage = () => {
   };
   const onEndReached = async () => {
     if (!loading && data?.seeFeeds.totalPage! > page) {
+      setFetching(true);
       await fetchMore({ variables: { input: { page: page + 1, pageSize } } });
       setPage((page) => page + 1);
     }
@@ -58,13 +67,14 @@ export const FeedPage = () => {
       <FlatList
         refreshing={refreshing}
         onRefresh={onRefresh}
-        onEndReachedThreshold={0.2}
+        onEndReachedThreshold={-0.17}
         onEndReached={onEndReached}
         data={data?.seeFeeds.feeds}
         keyExtractor={(item: QuerySeeFeeds_seeFeeds_feeds) => `${item.id}`}
         showsVerticalScrollIndicator={false}
         renderItem={renderPhoto}
       />
+      {fetching && <ActivityIndicator color="gray" />}
     </ScreenLayout>
   );
 };

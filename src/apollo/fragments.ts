@@ -90,3 +90,21 @@ export const SMALL_USER = gql`
     isFollowing
   }
 `;
+
+export const PART_ROOM = gql`
+  fragment PartRoom on Room {
+    id
+    createdAt
+    updatedAt
+    participants {
+      id
+      username
+      avatar
+      firstName
+    }
+    numUnread
+    latestMessage {
+      payload
+    }
+  }
+`;

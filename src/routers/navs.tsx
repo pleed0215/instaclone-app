@@ -17,6 +17,10 @@ import { useCustomTheme, useLogo } from "../theme/theme";
 import { Image } from "react-native";
 import { LikesPage } from "../pages/loggedin/likes";
 import { CommentsPage } from "../pages/loggedin/comments";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/core";
+import { DirectMessages } from "../pages/loggedin/direct.message";
 
 export type LoggedOutStackParamList = {
   Auth: { isCreating: boolean };
@@ -39,6 +43,7 @@ export type LoggedInWrapperParamList = {
   LoggedIn: any;
   Upload: any;
   UploadForm: { localUri: string };
+  DirectMessages: any;
 };
 
 export type UploadNavParamList = {
@@ -67,6 +72,7 @@ export const StackNavFactory: React.FC<StackNavFactoryProp> = ({
 }) => {
   const theme = useCustomTheme();
   const logo = useLogo();
+  const navigation = useNavigation();
   return (
     <Stack.Navigator
       headerMode="screen"
@@ -88,6 +94,18 @@ export const StackNavFactory: React.FC<StackNavFactoryProp> = ({
                 style={{ maxHeight: 50 }}
                 resizeMode="contain"
               />
+            ),
+            headerRight: () => (
+              <TouchableOpacity
+                onPress={() => navigation.navigate("DirectMessages")}
+                style={{ marginRight: 25 }}
+              >
+                <Ionicons
+                  name="paper-plane-outline"
+                  color={theme.color.primary}
+                  size={25}
+                />
+              </TouchableOpacity>
             ),
           }}
         />

@@ -8,6 +8,7 @@ import styled from "styled-components/native";
 import { UploadPage } from "../pages/loggedin/upload";
 import { View } from "react-native";
 import { UploadFormPage } from "../pages/loggedin/upload.form";
+import { DirectMessages } from "../pages/loggedin/direct.message";
 
 const Avatar = styled.Image`
   width: 30px;
@@ -152,6 +153,11 @@ export const LoggedInWrapperNavigation = () => {
           },
         }}
         component={UploadFormPage}
+      />
+      <LoggedInWrapper.Screen
+        name="DirectMessages"
+        component={DirectMessages}
+        options={{ headerShown: false }}
       />
     </LoggedInWrapper.Navigator>
   );
