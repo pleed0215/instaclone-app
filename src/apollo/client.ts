@@ -9,7 +9,11 @@ import { WebSocketLink } from "@apollo/client/link/ws";
 import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
 
-import { getMainDefinition } from "@apollo/client/utilities";
+import {
+  getMainDefinition,
+  isReference,
+  offsetLimitPagination,
+} from "@apollo/client/utilities";
 import { authTokenVar } from "./vars";
 import { QuerySeeFeeds_seeFeeds } from "../codegen/QuerySeeFeeds";
 import {
@@ -17,11 +21,21 @@ import {
   QuerySeeLikeUsers_seeLikeUsers_likeUsers,
 } from "../codegen/QuerySeeLikeUsers";
 import { createUploadLink } from "apollo-upload-client";
+import { QuerySeeRoom_seeRoom } from "../codegen/QuerySeeRoom";
 
 const HTTP_ENDPOINT = `https://brave-seahorse-89.loca.lt/graphql`;
 const WS_ENDPOINT = `wss://brave-seahorse-89.loca.lt/graphql`;
 //const HTTP_ENDPOINT = `http://localhost:4000/graphql`;
 //const WS_ENDPOINT = `ws://localhost:4000/graphql`;
+
+const seeRoomFieldPolicy: FieldPolicy = {
+  keyArgs: false,
+  merge(existing, incoming, options) {
+    console.log(incoming.room);
+
+    return incoming;
+  },
+};
 
 const seeFeedsFieldPolicy: FieldPolicy = {
   keyArgs: false,
@@ -31,6 +45,7 @@ const seeFeedsFieldPolicy: FieldPolicy = {
     options
   ) {
     // 와.. 시파..
+
     if (incoming.ok && incoming.feeds) {
       if (exisiting && exisiting.feeds) {
         if (exisiting.currentPage === incoming.currentPage) {
@@ -95,6 +110,7 @@ export const cache = new InMemoryCache({
       fields: {
         seeFeeds: seeFeedsFieldPolicy,
         seeLikeUsers: seeLikeUsersFieldPolicy,
+        seeRoom: seeRoomFieldPolicy,
       },
     },
     User: {

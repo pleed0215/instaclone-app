@@ -145,3 +145,26 @@ export const GQL_SEE_ROOMS = gql`
   }
   ${PART_ROOM}
 `;
+
+export const GQL_SEE_ROOM = gql`
+  query QuerySeeRoom($input: SeeRoomInput!, $offset: Int!, $limit: Int!) {
+    seeRoom(input: $input) {
+      ok
+      error
+      room {
+        ...PartRoom
+        messages(orderBy: { createdAt: desc }, skip: $offset, take: $limit) {
+          id
+          createdAt
+          payload
+          user {
+            id
+            username
+            avatar
+          }
+        }
+      }
+    }
+  }
+  ${PART_ROOM}
+`;

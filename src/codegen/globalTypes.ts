@@ -47,6 +47,10 @@ export interface SeePhotoDetailInput {
   id: number;
 }
 
+export interface SeeRoomInput {
+  roomId: number;
+}
+
 export interface ToggleFollowUserInput {
   username: string;
 }

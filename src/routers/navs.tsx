@@ -14,13 +14,12 @@ import { PhotoPage } from "../pages/loggedin/photo";
 import { SearchPage } from "../pages/loggedin/search";
 import { NotificationPage } from "../pages/loggedin/notification";
 import { useCustomTheme, useLogo } from "../theme/theme";
-import { Image } from "react-native";
+import { Image, TouchableOpacity } from "react-native";
 import { LikesPage } from "../pages/loggedin/likes";
 import { CommentsPage } from "../pages/loggedin/comments";
-import { TouchableOpacity } from "react-native-gesture-handler";
+
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/core";
-import { DirectMessages } from "../pages/loggedin/direct.message";
 
 export type LoggedOutStackParamList = {
   Auth: { isCreating: boolean };
