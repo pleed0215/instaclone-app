@@ -1,3 +1,4 @@
+import { QueryFetchMessage_fetchAndReadMessages } from "./../codegen/QueryFetchMessage";
 import {
   ApolloClient,
   createHttpLink,
@@ -28,40 +29,60 @@ import {
   QuerySeeRoom_seeRoom_room,
 } from "../codegen/QuerySeeRoom";
 
-const HTTP_ENDPOINT = `https://giant-cat-16.loca.lt/graphql`;
-const WS_ENDPOINT = `wss://giant-cat-16.loca.lt/graphql`;
+const HTTP_ENDPOINT = `https://bright-yak-47.loca.lt/graphql`;
+const WS_ENDPOINT = `wss://bright-yak-47.loca.lt/graphql`;
 //const HTTP_ENDPOINT = `http://localhost:4000/graphql`;
 //const WS_ENDPOINT = `ws://localhost:4000/graphql`;
 
-const seeRoomFieldPolicy: FieldPolicy = {
-  keyArgs: false,
-  merge(existing, incoming, options) {
-    return incoming;
+const fetchAndReadMessagesPolicy: FieldPolicy = {
+  keyArgs: ["roomId"],
+  merge(
+    existing: QueryFetchMessage_fetchAndReadMessages,
+    incoming: QueryFetchMessage_fetchAndReadMessages,
+    options
+  ) {
+    if (options.args?.input.cursorId === 0) {
+      return incoming;
+    } else {
+      if (incoming.ok && incoming.messages) {
+        if (existing && existing.messages) {
+          return {
+            ...incoming,
+            messages: [...existing.messages, ...incoming.messages],
+          };
+        } else {
+          // exisint empty... ex) first fetched data.
+          return { ...incoming };
+        }
+      } else {
+        return { ...existing };
+      }
+    }
   },
 };
 
 const seeFeedsFieldPolicy: FieldPolicy = {
   keyArgs: false,
   merge(
-    exisiting: QuerySeeFeeds_seeFeeds,
+    existing: QuerySeeFeeds_seeFeeds,
     incoming: QuerySeeFeeds_seeFeeds,
     options
   ) {
     // 와.. 시파..
     if (incoming.ok && incoming.feeds) {
-      if (exisiting && exisiting.feeds) {
-        if (exisiting.currentPage === incoming.currentPage) {
+      if (existing && existing.feeds) {
+        if (existing.currentPage === incoming.currentPage) {
           return {
             ...incoming,
           };
-        } else if (exisiting.currentPage! > incoming.currentPage!) {
+        } else if (existing.currentPage! > incoming.currentPage!) {
           return {
-            ...exisiting,
+            ...existing,
           };
         } else {
           return {
             ...incoming,
-            feeds: [...exisiting.feeds, ...incoming.feeds],
+            feeds: [...existing.feeds, ...incoming.feeds],
           };
         }
       } else {
@@ -69,31 +90,31 @@ const seeFeedsFieldPolicy: FieldPolicy = {
         return { ...incoming };
       }
     } else {
-      return { ...exisiting };
+      return { ...existing };
     }
   },
 };
 
 const seeLikeUsersFieldPolicy: FieldPolicy = {
   merge(
-    exisiting: QuerySeeLikeUsers_seeLikeUsers,
+    existing: QuerySeeLikeUsers_seeLikeUsers,
     incoming: QuerySeeLikeUsers_seeLikeUsers,
     options
   ) {
     if (incoming.ok && incoming.likeUsers) {
-      if (exisiting && exisiting.likeUsers) {
-        if (exisiting.currentPage === incoming.currentPage) {
+      if (existing && existing.likeUsers) {
+        if (existing.currentPage === incoming.currentPage) {
           return {
             ...incoming,
           };
-        } else if (exisiting.currentPage! > incoming.currentPage!) {
+        } else if (existing.currentPage! > incoming.currentPage!) {
           return {
-            ...exisiting,
+            ...existing,
           };
         } else {
           return {
             ...incoming,
-            likeUsers: [...exisiting.likeUsers, ...incoming.likeUsers],
+            likeUsers: [...existing.likeUsers, ...incoming.likeUsers],
           };
         }
       } else {
@@ -101,7 +122,7 @@ const seeLikeUsersFieldPolicy: FieldPolicy = {
         return { ...incoming };
       }
     } else {
-      return { ...exisiting };
+      return { ...existing };
     }
   },
 };
@@ -112,23 +133,14 @@ export const cache = new InMemoryCache({
       fields: {
         seeFeeds: seeFeedsFieldPolicy,
         seeLikeUsers: seeLikeUsersFieldPolicy,
-        seeRoom: {
-          keyArgs: false,
-          merge(existing, incoming) {
-            return incoming;
-          },
-        },
+        fetchAndReadMessages: fetchAndReadMessagesPolicy,
       },
     },
     User: {
       keyFields: (object) => `User:${object.username}`,
     },
-
-    Room: {
-      merge(existing, incoming, { cache, readField }) {
-        console.log(readField("messages", readField("room")));
-        return incoming;
-      },
+    Message: {
+      keyFields: ["id"],
     },
   },
 });

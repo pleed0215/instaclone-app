@@ -147,20 +147,16 @@ export const GQL_SEE_ROOMS = gql`
 `;
 
 export const GQL_SEE_ROOM = gql`
-  query QuerySeeRoom($input: SeeRoomInput!, $offset: Int!, $limit: Int!) {
+  query QuerySeeRoom($input: SeeRoomInput!) {
     seeRoom(input: $input) {
       ok
       error
       room {
         ...PartRoom
-        messages(orderBy: { createdAt: desc }, skip: $offset, take: $limit) {
-          ...PartMessage
-        }
       }
     }
   }
   ${PART_ROOM}
-  ${PART_MESSAGE}
 `;
 
 export const GQL_SEND_MESSAGE = gql`
@@ -171,6 +167,20 @@ export const GQL_SEND_MESSAGE = gql`
       message {
         ...PartMessage
       }
+    }
+  }
+  ${PART_MESSAGE}
+`;
+
+export const GQL_FETCH_MESSAGE = gql`
+  query QueryFetchMessage($input: FetchMessagesInput!) {
+    fetchAndReadMessages(input: $input) {
+      ok
+      error
+      messages {
+        ...PartMessage
+      }
+      count
     }
   }
   ${PART_MESSAGE}

@@ -15,6 +15,12 @@ export interface CreateAccountInput {
   password: string;
 }
 
+export interface FetchMessagesInput {
+  roomId: number;
+  cursorId?: number | null;
+  pageSize?: number | null;
+}
+
 export interface LoginInput {
   username: string;
   password: string;

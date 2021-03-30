@@ -16,16 +16,23 @@ import {
 } from "react-native";
 
 import styled, { css } from "styled-components/native";
-import { GQL_SEE_ROOM, GQL_SEND_MESSAGE } from "../../apollo/gqls";
+import {
+  GQL_FETCH_MESSAGE,
+  GQL_SEE_ROOM,
+  GQL_SEND_MESSAGE,
+} from "../../apollo/gqls";
 import {
   MutationSendMessage,
   MutationSendMessageVariables,
 } from "../../codegen/MutationSendMessage";
 import {
+  QueryFetchMessage,
+  QueryFetchMessageVariables,
+  QueryFetchMessage_fetchAndReadMessages_messages,
+} from "../../codegen/QueryFetchMessage";
+import {
   QuerySeeRoom,
   QuerySeeRoomVariables,
-  QuerySeeRoom_seeRoom,
-  QuerySeeRoom_seeRoom_room_messages,
 } from "../../codegen/QuerySeeRoom";
 import { Avatar } from "../../components/Avatar";
 import { ControlledInput } from "../../components/ControlledInput";
@@ -92,22 +99,38 @@ export const DMRoomPage: React.FC<StackScreenProps<DMParamList, "DMRoom">> = ({
   } = route;
 
   const [fetching, setFetching] = useState(false);
-  const { data, loading, refetch, fetchMore } = useQuery<
-    QuerySeeRoom,
-    QuerySeeRoomVariables
-  >(GQL_SEE_ROOM, {
-    variables: { input: { roomId }, offset: 0, limit },
-    onCompleted: (data) => {
-      if (!targetId) {
-        const targetUser = data.seeRoom.room?.participants.find(
-          (user) => user.id !== me?.seeMe.id
-        );
-        if (targetUser) {
-          targetId = targetUser.id;
+  const { data, loading } = useQuery<QuerySeeRoom, QuerySeeRoomVariables>(
+    GQL_SEE_ROOM,
+    {
+      variables: { input: { roomId } },
+      onCompleted: (data) => {
+        if (!targetId) {
+          const targetUser = data.seeRoom.room?.participants.find(
+            (user) => user.id !== me?.seeMe.id
+          );
+          if (targetUser) {
+            targetId = targetUser.id;
+          }
         }
-      }
-    },
-  });
+      },
+    }
+  );
+  const {
+    data: messages,
+    loading: messageFetching,
+    refetch,
+    fetchMore,
+  } = useQuery<QueryFetchMessage, QueryFetchMessageVariables>(
+    GQL_FETCH_MESSAGE,
+    {
+      variables: {
+        input: {
+          roomId,
+          cursorId: 0,
+        },
+      },
+    }
+  );
   const [sendMessage] = useMutation<
     MutationSendMessage,
     MutationSendMessageVariables
@@ -116,14 +139,20 @@ export const DMRoomPage: React.FC<StackScreenProps<DMParamList, "DMRoom">> = ({
       cache.modify({
         id: `Room:${roomId}`,
         fields: {
-          messages(prev, details) {
-            return [
-              { ...result.data?.sendMessage.message, isRead: true },
-              ...prev,
-            ];
-          },
           latestMessage(prev) {
             return result.data?.sendMessage.message;
+          },
+        },
+      });
+      cache.modify({
+        id: "ROOT_QUERY",
+        fields: {
+          fetchAndReadMessages(prev) {
+            const prevMessages = prev.messages ? prev.messages.slice(0) : [];
+            return {
+              ...prev,
+              messages: [result.data?.sendMessage.message, ...prevMessages],
+            };
           },
         },
       });
@@ -148,7 +177,7 @@ export const DMRoomPage: React.FC<StackScreenProps<DMParamList, "DMRoom">> = ({
     register("payload", { required: true, minLength: 1 });
   }, []);
 
-  const renderItem: ListRenderItem<QuerySeeRoom_seeRoom_room_messages> = ({
+  const renderItem: ListRenderItem<QueryFetchMessage_fetchAndReadMessages_messages> = ({
     item,
     index,
   }) => {
@@ -174,39 +203,50 @@ export const DMRoomPage: React.FC<StackScreenProps<DMParamList, "DMRoom">> = ({
   };
 
   const onRefresh = async () => {
-    const maxLength = data?.seeRoom.room
-      ? data?.seeRoom.room?.messages.length > 50
-        ? 50
-        : data?.seeRoom.room?.messages.length
-      : 10;
+    let refetchLength: number;
+
+    if (messages?.fetchAndReadMessages.messages) {
+      if (messages?.fetchAndReadMessages.messages.length > 100) {
+        // max refetch length
+        refetchLength = 100;
+      } else {
+        refetchLength = messages?.fetchAndReadMessages.messages.length;
+      }
+    } else {
+      refetchLength = 10;
+    }
+
     setRefreshing(true);
-    await refetch({ input: { roomId }, offset: 0, limit: maxLength });
+    await refetch({ input: { roomId, cursorId: 0, pageSize: refetchLength } });
     setRefreshing(false);
   };
 
   const onEndReached = async () => {
     setFetching(true);
-    await fetchMore({
+    const length = messages?.fetchAndReadMessages.messages?.length!;
+    const lastMsg = messages?.fetchAndReadMessages.messages![length - 1];
+
+    const result = await fetchMore({
       variables: {
-        input: { roomId },
-        offset: data?.seeRoom.room?.messages.length,
-        limit,
+        input: { roomId, cursorId: lastMsg?.id },
       },
     });
     setFetching(false);
   };
 
   const onSendMessage = () => {
-    sendMessage({
-      variables: {
-        input: {
-          userId: targetId,
-          roomId,
-          payload: getValues("payload"),
+    if (watch("payload").length > 0) {
+      sendMessage({
+        variables: {
+          input: {
+            userId: targetId,
+            roomId,
+            payload: getValues("payload"),
+          },
         },
-      },
-    });
-    setValue("payload", "");
+      });
+      setValue("payload", "");
+    }
   };
 
   return (
@@ -232,7 +272,7 @@ export const DMRoomPage: React.FC<StackScreenProps<DMParamList, "DMRoom">> = ({
             onRefresh={onRefresh}
             onEndReachedThreshold={-0.1}
             onEndReached={onEndReached}
-            data={data?.seeRoom.room?.messages}
+            data={messages?.fetchAndReadMessages.messages}
             keyExtractor={(item) => `Message: ${item.id}`}
             renderItem={renderItem}
           />
@@ -254,11 +294,11 @@ export const DMRoomPage: React.FC<StackScreenProps<DMParamList, "DMRoom">> = ({
             value={watch("payload")}
             onSubmitEditing={handleSubmit(onSendMessage)}
           />
-          <TouchableOpacity onPress={onEndReached}>
+          <TouchableOpacity onPress={onSendMessage}>
             <Ionicons
               name="paper-plane-outline"
               size={23}
-              color={theme.color.primary}
+              color={watch("payload").length > 0 ? theme.color.link : "gray"}
             />
           </TouchableOpacity>
         </View>
