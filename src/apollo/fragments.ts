@@ -91,6 +91,20 @@ export const SMALL_USER = gql`
   }
 `;
 
+export const PART_MESSAGE = gql`
+  fragment PartMessage on Message {
+    id
+    isRead
+    createdAt
+    payload
+    user {
+      id
+      username
+      avatar
+    }
+  }
+`;
+
 export const PART_ROOM = gql`
   fragment PartRoom on Room {
     id
@@ -104,7 +118,8 @@ export const PART_ROOM = gql`
     }
     numUnread
     latestMessage {
-      payload
+      ...PartMessage
     }
   }
+  ${PART_MESSAGE}
 `;

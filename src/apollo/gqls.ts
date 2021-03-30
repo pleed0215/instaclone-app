@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import { PART_PHOTO, PART_ROOM, SMALL_USER } from "./fragments";
+import { PART_MESSAGE, PART_PHOTO, PART_ROOM, SMALL_USER } from "./fragments";
 
 export const GQL_SEE_FEEDS = gql`
   query QuerySeeFeeds($input: SeeFeedsInput!) {
@@ -154,17 +154,24 @@ export const GQL_SEE_ROOM = gql`
       room {
         ...PartRoom
         messages(orderBy: { createdAt: desc }, skip: $offset, take: $limit) {
-          id
-          createdAt
-          payload
-          user {
-            id
-            username
-            avatar
-          }
+          ...PartMessage
         }
       }
     }
   }
   ${PART_ROOM}
+  ${PART_MESSAGE}
+`;
+
+export const GQL_SEND_MESSAGE = gql`
+  mutation MutationSendMessage($input: SendMessageInput!) {
+    sendMessage(input: $input) {
+      ok
+      error
+      message {
+        ...PartMessage
+      }
+    }
+  }
+  ${PART_MESSAGE}
 `;

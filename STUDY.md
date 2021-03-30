@@ -392,3 +392,40 @@ id에 캐쉬가 아니라 쿼리가 들어갔다는 것이 중요하다.
 이번 기회에.. pagination의 남용이 얼마나 나쁜지.. 절실히 깨달았다....
 파지네이션을 남용하니까 코드가 어렵고 변경이 어렵다.
 어떤 페이지네이션을 사용해야를 결정하는게 중요하다.
+
+### 채팅창 메세지 피아 구별
+
+-> 나는 left, right로 위치 이동시켰는데, 니코는 flex row reverse를 사용하더라구.. 더 편해보이더라구..
+
+## 미쵸버리겠다. 설계가 정말 중요하다.
+
+```ts
+// 미치겠다.. 진짜 설계가 중요하다.
+    update(cache, result) {
+      cache.modify({
+        id: 'ROOT_QUERY',
+        fields: {
+          seeRoom(prev, details) {
+            console.log(details);
+            return {
+              ...prev,
+              room: {
+                ...prev.rooms,
+                messages: [result.data?.sendMessage.]
+              }
+            }
+          }
+        }
+      })
+```
+
+sendMessage 이후에 update를 이용하여 cache를 업데이트 하려고 하니까.. 오잉..? 허허... 저런...
+sendMessage가 결국에는 message를 리턴을 해줘야 하는거야.. 그러면 쉽게 cache를 업데이트할 수 있는데..
+저런... 결국 fetching을 해야한다..
+
+### 이런??
+
+나는 각 채팅 한개마다 마진을 줘서 공간을 확보했는데, 니코는 FlatList의 ItemSeperator를 이용하여 .. 주더라.
+
+readFragment, writeFragment도 잊지 말자구.
+cache를 다루는 건 어렵지만 재밌다.근데 어렵다.근데 재밌다.Bitch같은!.

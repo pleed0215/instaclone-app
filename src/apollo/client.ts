@@ -2,6 +2,7 @@ import {
   ApolloClient,
   createHttpLink,
   FieldPolicy,
+  gql,
   InMemoryCache,
   split,
 } from "@apollo/client";
@@ -21,18 +22,20 @@ import {
   QuerySeeLikeUsers_seeLikeUsers_likeUsers,
 } from "../codegen/QuerySeeLikeUsers";
 import { createUploadLink } from "apollo-upload-client";
-import { QuerySeeRoom_seeRoom } from "../codegen/QuerySeeRoom";
+import {
+  QuerySeeRoom,
+  QuerySeeRoom_seeRoom,
+  QuerySeeRoom_seeRoom_room,
+} from "../codegen/QuerySeeRoom";
 
-const HTTP_ENDPOINT = `https://brave-seahorse-89.loca.lt/graphql`;
-const WS_ENDPOINT = `wss://brave-seahorse-89.loca.lt/graphql`;
+const HTTP_ENDPOINT = `https://giant-cat-16.loca.lt/graphql`;
+const WS_ENDPOINT = `wss://giant-cat-16.loca.lt/graphql`;
 //const HTTP_ENDPOINT = `http://localhost:4000/graphql`;
 //const WS_ENDPOINT = `ws://localhost:4000/graphql`;
 
 const seeRoomFieldPolicy: FieldPolicy = {
   keyArgs: false,
   merge(existing, incoming, options) {
-    console.log(incoming.room);
-
     return incoming;
   },
 };
@@ -45,7 +48,6 @@ const seeFeedsFieldPolicy: FieldPolicy = {
     options
   ) {
     // 와.. 시파..
-
     if (incoming.ok && incoming.feeds) {
       if (exisiting && exisiting.feeds) {
         if (exisiting.currentPage === incoming.currentPage) {
@@ -110,11 +112,23 @@ export const cache = new InMemoryCache({
       fields: {
         seeFeeds: seeFeedsFieldPolicy,
         seeLikeUsers: seeLikeUsersFieldPolicy,
-        seeRoom: seeRoomFieldPolicy,
+        seeRoom: {
+          keyArgs: false,
+          merge(existing, incoming) {
+            return incoming;
+          },
+        },
       },
     },
     User: {
-      keyFields: (object) => `User: ${object.username}`,
+      keyFields: (object) => `User:${object.username}`,
+    },
+
+    Room: {
+      merge(existing, incoming, { cache, readField }) {
+        console.log(readField("messages", readField("room")));
+        return incoming;
+      },
     },
   },
 });

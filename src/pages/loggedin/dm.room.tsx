@@ -1,7 +1,7 @@
-import { useQuery } from "@apollo/client";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import { Ionicons } from "@expo/vector-icons";
 import { StackScreenProps } from "@react-navigation/stack";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   Dimensions,
@@ -16,10 +16,15 @@ import {
 } from "react-native";
 
 import styled, { css } from "styled-components/native";
-import { GQL_SEE_ROOM } from "../../apollo/gqls";
+import { GQL_SEE_ROOM, GQL_SEND_MESSAGE } from "../../apollo/gqls";
+import {
+  MutationSendMessage,
+  MutationSendMessageVariables,
+} from "../../codegen/MutationSendMessage";
 import {
   QuerySeeRoom,
   QuerySeeRoomVariables,
+  QuerySeeRoom_seeRoom,
   QuerySeeRoom_seeRoom_room_messages,
 } from "../../codegen/QuerySeeRoom";
 import { Avatar } from "../../components/Avatar";
@@ -37,19 +42,9 @@ const Container = styled.View`
   background-color: ${(props) => props.theme.background.primary};
 `;
 const ChatWrapper = styled.View<{ isMe: boolean }>`
-  flex-direction: row;
+  flex-direction: ${(props) => (props.isMe ? "row-reverse" : "row")};
+  width: ${width - 20}px;
   align-items: center;
-  justify-content: center;
-  margin-top: 5px;
-  margin-bottom: 5px;
-  ${(props) =>
-    props.isMe
-      ? css`
-          align-self: flex-end;
-        `
-      : css`
-          align-self: flex-start;
-        `};
 `;
 
 const UserWrapper = styled.View`
@@ -64,15 +59,21 @@ const Username = styled.Text<{ isMe: boolean }>`
 `;
 
 const ChatTextWrapper = styled.View<{ isMe: boolean }>`
-  width: ${width / 3}px;
+  width: ${width - 200}px;
+  margin: 0px 5px;
   padding: 10px;
   background-color: ${(props) => (props.isMe ? "yellow" : "white")};
   border-radius: 5px;
-
+`;
+const ChatText = styled.Text<{ isMe: boolean }>`
+  color: black;
   text-align: ${(props) => (props.isMe ? "right" : "left")};
 `;
-const ChatText = styled.Text`
-  color: black;
+
+const ChatInput = styled.TextInput`
+  width: ${width - 55}px;
+  padding: 3px 5px;
+  color: ${(props) => props.theme.color.primary};
 `;
 
 interface ChatProp {
@@ -85,21 +86,67 @@ export const DMRoomPage: React.FC<StackScreenProps<DMParamList, "DMRoom">> = ({
 }) => {
   const limit = 10;
   const { data: me } = useMe();
+  let targetId: number;
   const {
     params: { roomId },
   } = route;
-  const [offset, setOffset] = useState(limit);
+
   const [fetching, setFetching] = useState(false);
   const { data, loading, refetch, fetchMore } = useQuery<
     QuerySeeRoom,
     QuerySeeRoomVariables
-  >(GQL_SEE_ROOM, { variables: { input: { roomId }, offset, limit } });
+  >(GQL_SEE_ROOM, {
+    variables: { input: { roomId }, offset: 0, limit },
+    onCompleted: (data) => {
+      if (!targetId) {
+        const targetUser = data.seeRoom.room?.participants.find(
+          (user) => user.id !== me?.seeMe.id
+        );
+        if (targetUser) {
+          targetId = targetUser.id;
+        }
+      }
+    },
+  });
+  const [sendMessage] = useMutation<
+    MutationSendMessage,
+    MutationSendMessageVariables
+  >(GQL_SEND_MESSAGE, {
+    update(cache, result) {
+      cache.modify({
+        id: `Room:${roomId}`,
+        fields: {
+          messages(prev, details) {
+            return [
+              { ...result.data?.sendMessage.message, isRead: true },
+              ...prev,
+            ];
+          },
+          latestMessage(prev) {
+            return result.data?.sendMessage.message;
+          },
+        },
+      });
+    },
+  });
+
   const [refreshing, setRefreshing] = useState(false);
-  const { control, formState, getValues } = useForm<ChatProp>({
+  const {
+    register,
+    formState,
+    getValues,
+    handleSubmit,
+    setValue,
+    watch,
+  } = useForm<ChatProp>({
     mode: "onChange",
     defaultValues: { payload: "" },
   });
   const theme = useCustomTheme();
+
+  useEffect(() => {
+    register("payload", { required: true, minLength: 1 });
+  }, []);
 
   const renderItem: ListRenderItem<QuerySeeRoom_seeRoom_room_messages> = ({
     item,
@@ -109,22 +156,31 @@ export const DMRoomPage: React.FC<StackScreenProps<DMParamList, "DMRoom">> = ({
 
     return (
       <ChatWrapper isMe={isMe}>
-        <Avatar size={30} uri={item.user.avatar} color="gray" />
-        <UserWrapper>
-          <Username isMe={isMe}>
-            {item.user.username} / {item.createdAt}
-          </Username>
-          <ChatTextWrapper isMe={isMe}>
-            <ChatText>{item.payload}</ChatText>
-          </ChatTextWrapper>
-        </UserWrapper>
+        <View style={{}}>
+          <UserWrapper>
+            <Username isMe={isMe}>
+              {item.user.username} / {item.createdAt}
+            </Username>
+          </UserWrapper>
+          <View style={{ flexDirection: isMe ? "row-reverse" : "row" }}>
+            <Avatar size={30} uri={item.user.avatar} color="gray" />
+            <ChatTextWrapper isMe={isMe}>
+              <ChatText isMe={isMe}>{item.payload}</ChatText>
+            </ChatTextWrapper>
+          </View>
+        </View>
       </ChatWrapper>
     );
   };
 
   const onRefresh = async () => {
+    const maxLength = data?.seeRoom.room
+      ? data?.seeRoom.room?.messages.length > 50
+        ? 50
+        : data?.seeRoom.room?.messages.length
+      : 10;
     setRefreshing(true);
-    await refetch({ input: { roomId }, offset: 0, limit });
+    await refetch({ input: { roomId }, offset: 0, limit: maxLength });
     setRefreshing(false);
   };
 
@@ -140,10 +196,23 @@ export const DMRoomPage: React.FC<StackScreenProps<DMParamList, "DMRoom">> = ({
     setFetching(false);
   };
 
+  const onSendMessage = () => {
+    sendMessage({
+      variables: {
+        input: {
+          userId: targetId,
+          roomId,
+          payload: getValues("payload"),
+        },
+      },
+    });
+    setValue("payload", "");
+  };
+
   return (
     <Container>
       <KeyboardAvoidingView
-        behavior="height"
+        behavior="padding"
         style={{ flex: 1 }}
         keyboardVerticalOffset={120}
       >
@@ -153,12 +222,13 @@ export const DMRoomPage: React.FC<StackScreenProps<DMParamList, "DMRoom">> = ({
             style={{
               flex: 0.8,
               position: "relative",
-              paddingHorizontal: 10,
+              padding: 10,
               overflow: "hidden",
             }}
             inverted
             scrollsToTop
             refreshing={refreshing}
+            ItemSeparatorComponent={() => <View style={{ height: 4 }} />}
             onRefresh={onRefresh}
             onEndReachedThreshold={-0.1}
             onEndReached={onEndReached}
@@ -167,32 +237,32 @@ export const DMRoomPage: React.FC<StackScreenProps<DMParamList, "DMRoom">> = ({
             renderItem={renderItem}
           />
         </DismissKeyboard>
-      </KeyboardAvoidingView>
-      <View
-        style={{
-          flex: 0.1,
-          backgroundColor: "rgba(50,50,50,0.2)",
-          flexDirection: "row",
-          alignItems: "center",
-          paddingHorizontal: 10,
-        }}
-      >
-        <ControlledInput
-          name="payload"
-          placeholder="메세지 보내기..."
-          placeholderTextColor="gray"
-          control={control}
-          rules={{ required: true, minLength: 1 }}
-          style={{ marginRight: 5, height: 20, width: width - 55 }}
-        />
-        <TouchableOpacity>
-          <Ionicons
-            name="paper-plane-outline"
-            size={23}
-            color={theme.color.primary}
+
+        <View
+          style={{
+            flex: 0.1,
+            backgroundColor: "rgba(50,50,50,0.2)",
+            flexDirection: "row",
+            alignItems: "center",
+            paddingHorizontal: 10,
+          }}
+        >
+          <ChatInput
+            placeholder="메세지 보내기..."
+            returnKeyType="send"
+            onChangeText={(text) => setValue("payload", text)}
+            value={watch("payload")}
+            onSubmitEditing={handleSubmit(onSendMessage)}
           />
-        </TouchableOpacity>
-      </View>
+          <TouchableOpacity onPress={onEndReached}>
+            <Ionicons
+              name="paper-plane-outline"
+              size={23}
+              color={theme.color.primary}
+            />
+          </TouchableOpacity>
+        </View>
+      </KeyboardAvoidingView>
     </Container>
   );
 };

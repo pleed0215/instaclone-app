@@ -51,6 +51,12 @@ export interface SeeRoomInput {
   roomId: number;
 }
 
+export interface SendMessageInput {
+  payload: string;
+  userId?: number | null;
+  roomId?: number | null;
+}
+
 export interface ToggleFollowUserInput {
   username: string;
 }
