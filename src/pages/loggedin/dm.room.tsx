@@ -1,7 +1,13 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
+import {
+  gql,
+  useApolloClient,
+  useMutation,
+  useQuery,
+  useSubscription,
+} from "@apollo/client";
 import { Ionicons } from "@expo/vector-icons";
 import { StackScreenProps } from "@react-navigation/stack";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   Dimensions,
@@ -20,6 +26,7 @@ import {
   GQL_FETCH_MESSAGE,
   GQL_SEE_ROOM,
   GQL_SEND_MESSAGE,
+  GQL_WAIT_MESSAGE,
 } from "../../apollo/gqls";
 import {
   MutationSendMessage,
@@ -28,12 +35,18 @@ import {
 import {
   QueryFetchMessage,
   QueryFetchMessageVariables,
+  QueryFetchMessage_fetchAndReadMessages,
   QueryFetchMessage_fetchAndReadMessages_messages,
 } from "../../codegen/QueryFetchMessage";
 import {
   QuerySeeRoom,
   QuerySeeRoomVariables,
 } from "../../codegen/QuerySeeRoom";
+import {
+  SubWaitMessage,
+  SubWaitMessageVariables,
+  SubWaitMessage_waitNewMessage,
+} from "../../codegen/SubWaitMessage";
 import { Avatar } from "../../components/Avatar";
 import { ControlledInput } from "../../components/ControlledInput";
 import { DismissKeyboard } from "../../components/DismissKeyboard";
@@ -147,17 +160,57 @@ export const DMRoomPage: React.FC<StackScreenProps<DMParamList, "DMRoom">> = ({
       cache.modify({
         id: "ROOT_QUERY",
         fields: {
-          fetchAndReadMessages(prev) {
+          fetchAndReadMessages(prev: QueryFetchMessage_fetchAndReadMessages) {
             const prevMessages = prev.messages ? prev.messages.slice(0) : [];
-            return {
-              ...prev,
-              messages: [result.data?.sendMessage.message, ...prevMessages],
-            };
+            if (
+              prevMessages.some(
+                (m) => m.id === result.data?.sendMessage.message?.id
+              )
+            ) {
+              return prev;
+            } else {
+              return {
+                ...prev,
+                messages: [result.data?.sendMessage.message, ...prevMessages],
+              };
+            }
           },
         },
       });
     },
   });
+  const { error } = useSubscription<SubWaitMessage, SubWaitMessageVariables>(
+    GQL_WAIT_MESSAGE,
+    {
+      variables: { roomId },
+      onSubscriptionData: ({ client, subscriptionData }) => {
+        client.cache.modify({
+          id: "ROOT_QUERY",
+          fields: {
+            fetchAndReadMessages(prev: QueryFetchMessage_fetchAndReadMessages) {
+              const prevMessages = prev.messages ? prev.messages.slice(0) : [];
+
+              if (
+                prevMessages.some(
+                  (m) => m.id === subscriptionData.data?.waitNewMessage?.id
+                )
+              ) {
+                return prev;
+              } else {
+                return {
+                  ...prev,
+                  messages: [
+                    subscriptionData.data?.waitNewMessage,
+                    ...prevMessages,
+                  ],
+                };
+              }
+            },
+          },
+        });
+      },
+    }
+  );
 
   const [refreshing, setRefreshing] = useState(false);
   const {
@@ -248,6 +301,36 @@ export const DMRoomPage: React.FC<StackScreenProps<DMParamList, "DMRoom">> = ({
       setValue("payload", "");
     }
   };
+  const client = useApolloClient();
+  // 잘 작동을 안해부러요.
+  /*useEffect(() => {
+    if (messages?.fetchAndReadMessages.messages) {
+      subscribeToMore({
+        document: GQL_WAIT_MESSAGE,
+        variables: {
+          roomId,
+        },
+        updateQuery: (prev, options) => {
+          console.log(prev.fetchAndReadMessages);
+          console.log("aaakjdsalkfjafklajflkjaslkdfjalkfdj");
+          console.log(options.subscriptionData.data);
+
+          return {
+            fetchAndReadMessages: {
+              ...prev.fetchAndReadMessages,
+              // @ts-ignore
+              messages: [
+                // @ts-ignore
+                options.subscriptionData.data.waitNewMessages,
+                // @ts-ignore
+                ...prev.fetchAndReadMessages.messages,
+              ],
+            },
+          };
+        },
+      });
+    }
+  }, [messages]);*/
 
   return (
     <Container>
@@ -291,6 +374,7 @@ export const DMRoomPage: React.FC<StackScreenProps<DMParamList, "DMRoom">> = ({
             placeholder="메세지 보내기..."
             returnKeyType="send"
             onChangeText={(text) => setValue("payload", text)}
+            blurOnSubmit={false}
             value={watch("payload")}
             onSubmitEditing={handleSubmit(onSendMessage)}
           />

@@ -185,3 +185,12 @@ export const GQL_FETCH_MESSAGE = gql`
   }
   ${PART_MESSAGE}
 `;
+
+export const GQL_WAIT_MESSAGE = gql`
+  subscription SubWaitMessage($roomId: Int!) {
+    waitNewMessage(roomId: $roomId) {
+      ...PartMessage
+    }
+  }
+  ${PART_MESSAGE}
+`;

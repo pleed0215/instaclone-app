@@ -444,3 +444,18 @@ cache를 다루는 건 어렵지만 재밌다.근데 어렵다.근데 재밌다.
 
 프론트에서 뭔가 잘 안되면, 여러번 시도했는데 잘안되면, 백엔드를 수정해야 할 것 같다.
 백엔드를 수정하니 .. 문제가 해결되었다..
+
+### subscribeMore
+
+useQuery에 이런게 있다.. 허허.
+prevResult가 내가 원하는결과가 아닌 것 같은데!?
+subscribeToMore는 조금더 연구가 필요할 것 같다.
+니코는 writeFragment와 cache modify로 Room을 수정했다.
+
+```ts
+connectionParams: () => ({
+  "x-jwt": authTokenVar() || "",
+});
+```
+
+기존의 object를 리턴해주는 것에서.. object를 리턴해주는 함수로 바꾼 것.. 인데..??

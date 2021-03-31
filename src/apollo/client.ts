@@ -29,8 +29,8 @@ import {
   QuerySeeRoom_seeRoom_room,
 } from "../codegen/QuerySeeRoom";
 
-const HTTP_ENDPOINT = `https://bright-yak-47.loca.lt/graphql`;
-const WS_ENDPOINT = `wss://bright-yak-47.loca.lt/graphql`;
+const HTTP_ENDPOINT = `https://black-liger-88.loca.lt/graphql`;
+const WS_ENDPOINT = `wss://black-liger-88.loca.lt/graphql`;
 //const HTTP_ENDPOINT = `http://localhost:4000/graphql`;
 //const WS_ENDPOINT = `ws://localhost:4000/graphql`;
 
@@ -155,9 +155,9 @@ const wsLink = new WebSocketLink({
   uri: WS_ENDPOINT,
   options: {
     reconnect: true,
-    connectionParams: {
+    connectionParams: () => ({
       "x-jwt": authTokenVar() || "",
-    },
+    }),
   },
 });
 const authLink = setContext((request, prevContext) => {
