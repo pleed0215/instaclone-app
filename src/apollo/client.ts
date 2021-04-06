@@ -3,7 +3,6 @@ import {
   ApolloClient,
   createHttpLink,
   FieldPolicy,
-  gql,
   InMemoryCache,
   split,
 } from "@apollo/client";
@@ -11,28 +10,34 @@ import { WebSocketLink } from "@apollo/client/link/ws";
 import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
 
+import { getMainDefinition } from "@apollo/client/utilities";
 import {
-  getMainDefinition,
-  isReference,
-  offsetLimitPagination,
-} from "@apollo/client/utilities";
-import { authTokenVar } from "./vars";
-import { QuerySeeFeeds_seeFeeds } from "../codegen/QuerySeeFeeds";
-import {
-  QuerySeeLikeUsers_seeLikeUsers,
-  QuerySeeLikeUsers_seeLikeUsers_likeUsers,
-} from "../codegen/QuerySeeLikeUsers";
+  authTokenVar,
+  isLoggedInVar,
+  removeTokenFromStorage,
+  setTokenToStorage,
+} from "./vars";
+
+import { QuerySeeLikeUsers_seeLikeUsers } from "../codegen/QuerySeeLikeUsers";
 import { createUploadLink } from "apollo-upload-client";
-import {
-  QuerySeeRoom,
-  QuerySeeRoom_seeRoom,
-  QuerySeeRoom_seeRoom_room,
-} from "../codegen/QuerySeeRoom";
+import { QuerySeeFeeds_seeFeeds } from "../codegen/QuerySeeFeeds";
 
 const HTTP_ENDPOINT = `https://forkstar.herokuapp.com/graphql`;
 const WS_ENDPOINT = `wss://forkstar.herokuapp.com/graphql`;
 //const HTTP_ENDPOINT = `http://localhost:4000/graphql`;
 //const WS_ENDPOINT = `ws://localhost:4000/graphql`;
+
+export const makeLogin = async (token: string) => {
+  await setTokenToStorage(token);
+  isLoggedInVar(true);
+  authTokenVar(token);
+};
+export const makeLogout = async () => {
+  await removeTokenFromStorage();
+  apolloClient.cache.reset();
+  isLoggedInVar(false);
+  authTokenVar(null);
+};
 
 const fetchAndReadMessagesPolicy: FieldPolicy = {
   keyArgs: ["roomId"],
@@ -63,35 +68,17 @@ const fetchAndReadMessagesPolicy: FieldPolicy = {
 
 const seeFeedsFieldPolicy: FieldPolicy = {
   keyArgs: false,
-  merge(
-    existing: QuerySeeFeeds_seeFeeds,
-    incoming: QuerySeeFeeds_seeFeeds,
-    options
-  ) {
-    // 와.. 시파..
-    if (incoming.ok && incoming.feeds) {
-      if (existing && existing.feeds) {
-        if (existing.currentPage === incoming.currentPage) {
-          return {
-            ...incoming,
-          };
-        } else if (existing.currentPage! > incoming.currentPage!) {
-          return {
-            ...existing,
-          };
-        } else {
-          return {
-            ...incoming,
-            feeds: [...existing.feeds, ...incoming.feeds],
-          };
-        }
-      } else {
-        // exisint empty... ex) first fetched data.
-        return { ...incoming };
-      }
-    } else {
-      return { ...existing };
+  merge: (
+    prev: QuerySeeFeeds_seeFeeds[],
+    incoming: QuerySeeFeeds_seeFeeds[],
+    { args }
+  ) => {
+    const safePrev = prev ? prev.slice(0) : [];
+    const offset = args?.input ? args.input.offset : 0;
+    for (let i = 0; i < incoming.length; ++i) {
+      safePrev[offset + i] = incoming[i];
     }
+    return safePrev;
   },
 };
 

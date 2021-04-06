@@ -1,7 +1,8 @@
 import React, { useEffect } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import styled from "styled-components/native";
-import { makeLogout } from "../../apollo/vars";
+import { makeLogout } from "../../apollo/client";
+
 import { useMe } from "../../hooks/useMe";
 import { LoggedInScreenParam } from "../../routers/navs";
 

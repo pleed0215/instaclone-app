@@ -12,25 +12,13 @@ import { GQL_SEE_FEEDS } from "../../apollo/gqls";
 import {
   QuerySeeFeeds,
   QuerySeeFeedsVariables,
-  QuerySeeFeeds_seeFeeds_feeds,
+  QuerySeeFeeds_seeFeeds,
 } from "../../codegen/QuerySeeFeeds";
 import { FeedPhoto } from "../../components/FeedPhoto";
 import { ScreenLayout } from "../../components/ScreenLayout";
 
-const SView = styled.View`
-  flex: 1;
-  background-color: ${(props) => props.theme.background.primary};
-  align-items: center;
-  justify-content: center;
-`;
-
-const SText = styled.Text`
-  color: ${(props) => props.theme.color.primary};
-`;
-
 export const FeedPage = () => {
   const pageSize = 2;
-  const [page, setPage] = useState(1);
   const [fetching, setFetching] = useState(false);
   const { data, loading, refetch, fetchMore } = useQuery<
     QuerySeeFeeds,
@@ -38,42 +26,49 @@ export const FeedPage = () => {
   >(GQL_SEE_FEEDS, {
     variables: {
       input: {
-        page,
-        pageSize,
+        offset: 0,
+        limit: pageSize,
       },
     },
     onCompleted: () => setFetching(false),
   });
-  const renderPhoto: ListRenderItem<QuerySeeFeeds_seeFeeds_feeds> = ({
-    item,
-  }) => <FeedPhoto photo={item} />;
+  const renderPhoto: ListRenderItem<QuerySeeFeeds_seeFeeds> = ({ item }) => (
+    <FeedPhoto photo={item} />
+  );
 
   const [refreshing, setRefreshing] = useState(false);
   const onRefresh = async () => {
     setRefreshing(true);
-    await refetch({ input: { page: 1, pageSize } });
+    await refetch({ input: { offset: 0, limit: data?.seeFeeds.length } });
     setRefreshing(false);
   };
+
   const onEndReached = async () => {
-    if (!loading && data?.seeFeeds.totalPage! > page) {
+    if (!loading) {
       setFetching(true);
-      await fetchMore({ variables: { input: { page: page + 1, pageSize } } });
-      setPage((page) => page + 1);
+      await fetchMore({
+        variables: {
+          input: { offset: data?.seeFeeds.length, limit: pageSize },
+        },
+      });
+      setFetching(true);
     }
   };
 
   return (
     <ScreenLayout loading={loading}>
-      <FlatList
-        refreshing={refreshing}
-        onRefresh={onRefresh}
-        onEndReachedThreshold={-0.17}
-        onEndReached={onEndReached}
-        data={data?.seeFeeds.feeds}
-        keyExtractor={(item: QuerySeeFeeds_seeFeeds_feeds) => `${item.id}`}
-        showsVerticalScrollIndicator={false}
-        renderItem={renderPhoto}
-      />
+      {data && (
+        <FlatList
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          onEndReachedThreshold={-0.17}
+          onEndReached={onEndReached}
+          data={data?.seeFeeds}
+          keyExtractor={(item: QuerySeeFeeds_seeFeeds) => `Photo:${item.id}`}
+          showsVerticalScrollIndicator={false}
+          renderItem={renderPhoto}
+        />
+      )}
       {fetching && <ActivityIndicator color="gray" />}
     </ScreenLayout>
   );

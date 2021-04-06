@@ -1,7 +1,7 @@
 import { makeVar } from "@apollo/client";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Platform } from "react-native";
-import { AUTH_TOKEN_NAME, DARK_NAME } from "../constants";
+import { AUTH_TOKEN_NAME } from "../constants";
+import { apolloClient } from "./client";
 
 export const removeTokenFromStorage = async () =>
   await AsyncStorage.removeItem(AUTH_TOKEN_NAME);
@@ -17,16 +17,6 @@ export const getTokenFromStorage = async () => {
 };
 export const isLoggedInVar = makeVar(false);
 export const authTokenVar = makeVar<string | null>(null);
-export const makeLogin = async (token: string) => {
-  await setTokenToStorage(token);
-  isLoggedInVar(true);
-  authTokenVar(token);
-};
-export const makeLogout = async () => {
-  await removeTokenFromStorage();
-  isLoggedInVar(false);
-  authTokenVar(null);
-};
 
 /*const isDarkFromLS = () => localStorage.getItem(DARK_NAME) || "false";
 const setDarkModelToLS = (isDark: boolean) =>

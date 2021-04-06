@@ -8,22 +8,20 @@ import {
   ListRenderItem,
   TouchableOpacity,
   View,
-} from "react-native";
-import {
   FlatList,
-  TouchableWithoutFeedback,
-} from "react-native-gesture-handler";
+} from "react-native";
+
 import styled from "styled-components/native";
 import { GQL_SEARCH_PHOTO, GQL_SEARCH_USER } from "../../apollo/gqls";
 import {
   QuerySearchPhotos,
   QuerySearchPhotosVariables,
-  QuerySearchPhotos_searchPhotos_photos,
+  QuerySearchPhotos_searchPhotos,
 } from "../../codegen/QuerySearchPhotos";
 import {
   QuerySearchUser,
   QuerySearchUserVariables,
-  QuerySearchUser_searchUser_results,
+  QuerySearchUser_searchUser,
 } from "../../codegen/QuerySearchUser";
 import { ControlledInput } from "../../components/ControlledInput";
 import { DismissKeyboard } from "../../components/DismissKeyboard";
@@ -86,14 +84,14 @@ export const SearchPage: React.FC<LoggedInScreenParam<"Search">> = ({
   ] = useLazyQuery<QuerySearchPhotos, QuerySearchPhotosVariables>(
     GQL_SEARCH_PHOTO,
     {
-      variables: { input: { keyword: watch("term"), page: 1, pageSize: 12 } },
+      variables: { input: { keyword: watch("term"), offset: 0, limit: 10 } },
     }
   );
   const [
     searchUser,
     { loading: loadingSearchUser, data: users },
   ] = useLazyQuery<QuerySearchUser, QuerySearchUserVariables>(GQL_SEARCH_USER, {
-    variables: { input: { keyword: watch("term"), page: 1, pageSize: 4 } },
+    variables: { input: { keyword: watch("term"), offset: 0, limit: 10 } },
   });
 
   const onSearchSubmit = () => {
@@ -132,11 +130,11 @@ export const SearchPage: React.FC<LoggedInScreenParam<"Search">> = ({
     });
   }, []);
 
-  const renderUser: ListRenderItem<QuerySearchUser_searchUser_results> = ({
-    item,
-  }) => <ProfileFollow user={item} />;
+  const renderUser: ListRenderItem<QuerySearchUser_searchUser> = ({ item }) => (
+    <ProfileFollow user={item} />
+  );
 
-  const renderPhoto: ListRenderItem<QuerySearchPhotos_searchPhotos_photos> = ({
+  const renderPhoto: ListRenderItem<QuerySearchPhotos_searchPhotos> = ({
     item,
     index,
   }) => (
@@ -167,13 +165,10 @@ export const SearchPage: React.FC<LoggedInScreenParam<"Search">> = ({
               width,
             }}
           >
-            <TextResult>
-              Username continas '{getValues("term")}':{" "}
-              {getPluralText(users?.searchUser.totalCount!, "User")} found
-            </TextResult>
-            {photos.searchPhotos.photos.length > 0 && (
+            <TextResult>유저 검색 결과: '{getValues("term")}': </TextResult>
+            {photos.searchPhotos.length > 0 && (
               <FlatList
-                data={users.searchUser.results}
+                data={users.searchUser}
                 renderItem={renderUser}
                 keyExtractor={(item) => `User: ${item.username}`}
                 style={{
@@ -184,20 +179,16 @@ export const SearchPage: React.FC<LoggedInScreenParam<"Search">> = ({
                 }}
               />
             )}
-            <TextResult>
-              Photo contains '{getValues("term")}' :{" "}
-              {getPluralText(photos?.searchPhotos.totalCount!, "Photo")} found
-            </TextResult>
-            {users.searchUser.results &&
-              users.searchUser.results.length > 0 && (
-                <FlatList
-                  data={photos.searchPhotos.photos}
-                  numColumns={4}
-                  renderItem={renderPhoto}
-                  keyExtractor={(item) => `Photo: ${item.id}`}
-                  style={{ width }}
-                />
-              )}
+            <TextResult>사진 검색 결과: '{getValues("term")}' : </TextResult>
+            {users.searchUser && users.searchUser.length > 0 && (
+              <FlatList
+                data={photos.searchPhotos}
+                numColumns={4}
+                renderItem={renderPhoto}
+                keyExtractor={(item) => `Photo: ${item.id}`}
+                style={{ width }}
+              />
+            )}
           </View>
         )}
       </ScreenLayout>
