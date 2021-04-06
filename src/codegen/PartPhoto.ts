@@ -42,5 +42,8 @@ export interface PartPhoto {
   isLiked: boolean;
   numLikes: number;
   numComments: number;
+  /**
+   * @onDelete(CASCADE)
+   */
   comments: PartPhoto_comments[];
 }

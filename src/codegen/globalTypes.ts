@@ -27,20 +27,20 @@ export interface LoginInput {
 }
 
 export interface SearchPhotoInput {
-  page?: number | null;
-  pageSize?: number | null;
   keyword: string;
+  offset?: number | null;
+  limit?: number | null;
 }
 
 export interface SearchUserInput {
-  page?: number | null;
-  pageSize?: number | null;
+  offset?: number | null;
+  limit?: number | null;
   keyword: string;
 }
 
 export interface SeeFeedsInput {
-  page?: number | null;
-  pageSize?: number | null;
+  offset?: number | null;
+  limit?: number | null;
 }
 
 export interface SeeLikeUsersInput {

@@ -42,5 +42,8 @@ export interface PartUser {
   totalFollowings: number;
   isFollower: boolean;
   isFollowing: boolean;
+  /**
+   * @onDelete(CASCADE)
+   */
   photos: PartUser_photos[];
 }
