@@ -4,7 +4,7 @@ module.exports = {
     tagName: "gql",
     service: {
       name: "Instaclone app from nomadcoders",
-      url: "https://forkstar.herokuapp.com/graphql",
+      url: "http://my.yoyang.io:32768/graphql",
     },
   },
 };

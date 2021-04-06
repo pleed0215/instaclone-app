@@ -51,7 +51,7 @@ export const FeedPage = () => {
           input: { offset: data?.seeFeeds.length, limit: pageSize },
         },
       });
-      setFetching(true);
+      setFetching(false);
     }
   };
 
