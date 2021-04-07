@@ -36,16 +36,13 @@ export const SelectPhotoPage = ({ navigation, route }) => {
   const [ok, setOk] = useState(false);
   const [photos, setPhotos] = useState<MediaLibrary.Asset[]>([]);
   const [choosen, setChoosen] = useState<Array<string>>([]);
+  const [lastPhotoId, setLastPhotoId] = useState<string>("");
+  const [hasNext, setHasNext] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const { width } = useWindowDimensions();
   const imageWidth = Math.floor((width - 3) / 4);
   const getPermissions = async () => {
-    const {
-      canAskAgain,
-      granted,
-      status,
-      accessPrivileges,
-    } = await MediaLibrary.getPermissionsAsync();
+    const { canAskAgain, granted } = await MediaLibrary.getPermissionsAsync();
     if (!granted && canAskAgain) {
       const permission = await MediaLibrary.requestPermissionsAsync();
 
@@ -60,9 +57,31 @@ export const SelectPhotoPage = ({ navigation, route }) => {
   };
   const getPhotos = async () => {
     setRefreshing(true);
-    const { assets } = await MediaLibrary.getAssetsAsync();
+    const {
+      assets,
+      endCursor,
+      hasNextPage,
+    } = await MediaLibrary.getAssetsAsync({
+      first: photos.length > 0 ? photos.length : 20,
+    });
     setPhotos(assets);
+    setLastPhotoId(endCursor);
+    setHasNext(hasNextPage);
     setRefreshing(false);
+  };
+
+  const fetchMorePhoto = async () => {
+    if (hasNext) {
+      const {
+        assets,
+        endCursor,
+        hasNextPage,
+      } = await MediaLibrary.getAssetsAsync({ first: 20, after: lastPhotoId });
+
+      setPhotos((prev) => [...prev, ...assets]);
+      setLastPhotoId(endCursor);
+      setHasNext(hasNextPage);
+    }
   };
   const selected = (uri: string) => choosen.some((c) => c === uri);
   const toggleChoosen = (uri: string) => {
@@ -74,11 +93,15 @@ export const SelectPhotoPage = ({ navigation, route }) => {
   };
   const isFocused = useIsFocused();
 
-  const renderPhoto: ListRenderItem<MediaLibrary.Asset> = ({ item, index }) => {
+  interface AssetIndexAdded extends MediaLibrary.Asset {
+    index: number;
+  }
+
+  const RenderItem: React.FC<AssetIndexAdded> = ({ uri, index }) => {
     return (
-      <ImageContainer onPress={() => toggleChoosen(item.uri)}>
+      <ImageContainer onPress={() => toggleChoosen(uri)}>
         <Image
-          source={{ uri: item.uri }}
+          source={{ uri }}
           style={{
             width: imageWidth,
             height: imageWidth,
@@ -86,7 +109,7 @@ export const SelectPhotoPage = ({ navigation, route }) => {
           }}
         />
 
-        {selected(item.uri) && (
+        {selected(uri) && (
           <View
             style={{
               width: 19,
@@ -111,6 +134,11 @@ export const SelectPhotoPage = ({ navigation, route }) => {
         )}
       </ImageContainer>
     );
+  };
+  const MemoizedItem = React.memo(RenderItem);
+
+  const renderPhoto: ListRenderItem<MediaLibrary.Asset> = ({ item, index }) => {
+    return <RenderItem index={index} {...item} />;
   };
 
   useEffect(() => {
@@ -169,6 +197,7 @@ export const SelectPhotoPage = ({ navigation, route }) => {
           data={photos}
           keyExtractor={(item) => `${item.id}`}
           renderItem={renderPhoto}
+          onEndReached={fetchMorePhoto}
           numColumns={4}
         />
       </Bottom>

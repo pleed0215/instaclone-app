@@ -165,8 +165,8 @@ export const SearchPage: React.FC<LoggedInScreenParam<"Search">> = ({
               width,
             }}
           >
-            <TextResult>유저 검색 결과: '{getValues("term")}': </TextResult>
-            {photos.searchPhotos.length > 0 && (
+            <TextResult>유저 검색 결과: '{getValues("term")}'</TextResult>
+            {users.searchUser.length > 0 && (
               <FlatList
                 data={users.searchUser}
                 renderItem={renderUser}

@@ -58,7 +58,6 @@ export const UploadFormPage: React.FC<
   >(GQL_UPLOAD_PHOTO, {
     onCompleted: (data) => {
       setLoading(false);
-      console.log(data);
       if (data.uploadPhoto.ok) {
         // @ts-ignore
         navigation.navigate("Feed");
@@ -70,10 +69,8 @@ export const UploadFormPage: React.FC<
           id: "ROOT_QUERY",
           fields: {
             seeFeeds(prev) {
-              return {
-                ...prev,
-                feeds: [result.data?.uploadPhoto.photo, ...prev.feeds],
-              };
+              const safePrev = prev ? prev.slice(0) : [];
+              return [result.data?.uploadPhoto.photo, ...safePrev];
             },
           },
         });
