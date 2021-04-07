@@ -18,7 +18,7 @@ import {
   MutationCreateAccount,
   MutationCreateAccountVariables,
 } from "../../codegen/MutationCreateAccount";
-import { makeLogin } from "../../apollo/vars";
+import { makeLogin } from "../../apollo/client";
 
 const GQL_CREATE_ACCOUNT = gql`
   mutation MutationCreateAccount($input: CreateAccountInput!) {

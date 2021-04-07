@@ -335,7 +335,7 @@ export const DMRoomPage: React.FC<StackScreenProps<DMParamList, "DMRoom">> = ({
   return (
     <Container>
       <KeyboardAvoidingView
-        behavior="padding"
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
         keyboardVerticalOffset={120}
       >

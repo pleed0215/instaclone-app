@@ -86,10 +86,10 @@ export const TakePhotoPage: React.FC = ({ navigation }) => {
   };
   const getPermission = async () => {
     const permissions = await Camera.getPermissionsAsync();
-
+    console.log(permissions);
     if (permissions.granted) {
       setOk(true);
-    } else if (!permissions.granted && permissions.canAskAgain) {
+    } else if (!permissions.granted) {
       const request = await Camera.requestPermissionsAsync();
       if (request.granted) {
         setOk(true);

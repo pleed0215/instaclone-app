@@ -61,7 +61,7 @@ export const FeedPage = () => {
         <FlatList
           refreshing={refreshing}
           onRefresh={onRefresh}
-          onEndReachedThreshold={-0.17}
+          onEndReachedThreshold={0.05}
           onEndReached={onEndReached}
           data={data?.seeFeeds}
           keyExtractor={(item: QuerySeeFeeds_seeFeeds) => `Photo:${item.id}`}
